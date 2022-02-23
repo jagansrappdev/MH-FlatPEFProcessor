@@ -172,11 +172,12 @@ namespace MH.PEF.BLL
             resp.ProvSvcLocCountryCode           = GetStringFieldValue(InputLine, 1456, 3, "Service Location County Code");
             resp.ProvSvcLocPhone                 = GetStringFieldValue(InputLine, 1459, 10, "Service Location Address 2");
             resp.ProvSvcLocSiteVisitIndicator    = GetStringFieldValue(InputLine, 1469, 1, "Service Location Site Visit Indicator ");
-
+            // REPEAT-1
             resp.CustEssentialProvIndGroup5x = GetStringFieldValue(InputLine, 1470,10, "Property");
           //  resp.CustEssentialProvInd = GetStringFieldValue(InputLine, 1469, 1, "Property");
+
             resp.CustOthrProvIndGroup2x          = GetStringFieldValue(InputLine, 1480, 4, "Property");
-            resp.CustDHHSSPTierGroup5x           = GetStringFieldValue(InputLine, 1484, 105, "DHHS SP AMH Tier Information Group (5x)");
+            resp.CustDHHSSPAMHTierGroup5x = GetStringFieldValue(InputLine, 1484, 105, "DHHS SP AMH Tier Information Group (5x)");
             resp.ProvTaxonomyGroup20x            = GetStringFieldValue(InputLine, 1589, 2060, "Provider Taxonomy Group (20x)");
           //  resp.TaxonomyCode = GetStringFieldValue(InputLine, 1469, 1, "Property");
           //  resp.Property = GetStringFieldValue(InputLine, 1469, 1, "Property");
@@ -222,9 +223,47 @@ namespace MH.PEF.BLL
             resp.HOCrossDomainSvcProvInd     = GetStringFieldValue(InputLine, 7708, 1, "HO Cross-Domain Services Provider");
            
             resp.Hours24Ind                  = GetStringFieldValue(InputLine, 7709, 1, "24 Hour Indicator");
-           // resp.Property = GetStringFieldValue(InputLine, 1469, 1, "Property");
-         //   resp.Property = GetStringFieldValue(InputLine, 1469, 1, "Property");
-           // resp.Property = GetStringFieldValue(InputLine, 1469, 1, "Property");
+
+            resp.MonAMFrmHr                  = GetStringFieldValue(InputLine, 7710, 4, "Monday AM From Hour");
+            resp.MonAMToHr                   = GetStringFieldValue(InputLine, 7714, 4, "Monday AM To Hour");
+            resp.MonPMFrmHr                  = GetStringFieldValue(InputLine, 7718, 4, "Monday PM From Hour");
+            resp.MonPMToHr                   = GetStringFieldValue(InputLine, 7722, 4, "Monday PM To Hour");
+            //
+            resp.MonAMFrmHr = GetStringFieldValue(InputLine, 7710, 4, "Monday AM From Hour");
+            resp.MonAMToHr = GetStringFieldValue(InputLine, 7714, 4,  "Monday AM To Hour");
+            resp.MonPMFrmHr = GetStringFieldValue(InputLine, 7718, 4, "Monday PM From Hour");
+            resp.MonPMToHr = GetStringFieldValue(InputLine, 7722, 4,  "Monday PM To Hour");
+            //
+            resp.TueAMFrmHr = GetStringFieldValue(InputLine, 7726, 4, "Tuesday AM From Hour");
+            resp.TueAMToHr = GetStringFieldValue(InputLine, 7730, 4,  "Tuesday AM To Hour");
+            resp.TuePMFrmHr = GetStringFieldValue(InputLine, 7734, 4, "Tuesday PM From Hour");
+            resp.TuePMToHr = GetStringFieldValue(InputLine, 7738, 4,  "Tuesday PM To Hour");
+            //
+            resp.WedAMFrmHr = GetStringFieldValue(InputLine, 7742, 4, "Wednesday AM From Hour");
+            resp.WedAMToHr = GetStringFieldValue(InputLine, 7746, 4,  "Wednesday AM To Hour");
+            resp.WedPMFrmHr = GetStringFieldValue(InputLine, 7750, 4, "Wednesday PM From Hour");
+            resp.WedPMToHr = GetStringFieldValue(InputLine, 7754, 4,  "Wednesday PM To Hour");
+            //
+            resp.ThuAMFrmHr = GetStringFieldValue(InputLine, 7758, 4, "Thursday AM From Hour");
+            resp.ThuAMToHr = GetStringFieldValue(InputLine, 7762, 4,  "Thursday AM To Hour");
+            resp.ThuPMFrmHr = GetStringFieldValue(InputLine, 7766, 4, "Thursday PM From Hour");
+            resp.ThuPMToHr = GetStringFieldValue(InputLine, 7770, 4,  "Thursday PM To Hour");
+            //
+            resp.FriAMFrmHr = GetStringFieldValue(InputLine, 7774, 4, "Friday AM From Hour");
+            resp.FriAMToHr = GetStringFieldValue(InputLine, 7778, 4,  "Friday AM To Hour");
+            resp.FriPMFrmHr = GetStringFieldValue(InputLine, 7782, 4, "Friday PM From Hour");
+            resp.FriPMToHr = GetStringFieldValue(InputLine, 7786, 4,  "Friday PM To Hour");
+            //
+            resp.SatAMFrmHr = GetStringFieldValue(InputLine, 7790, 4, "Saturday AM From Hour");
+            resp.SatAMToHr = GetStringFieldValue(InputLine, 7794, 4,  "Saturday AM To Hour");
+            resp.SatPMFrmHr = GetStringFieldValue(InputLine, 7798, 4, "Saturday PM From Hour");
+            resp.SatPMToHr = GetStringFieldValue(InputLine, 7802, 4,  "Saturday PM To Hour");
+            //
+            resp.SunAMFrmHr = GetStringFieldValue(InputLine, 7806, 4, "Sunday AM From Hour");
+            resp.SunAMToHr = GetStringFieldValue(InputLine, 7810, 4,  "Sunday AM To Hour");
+            resp.SunPMFrmHr = GetStringFieldValue(InputLine, 7814, 4, "Sunday PM From Hour");
+            resp.SunPMToHr = GetStringFieldValue(InputLine, 7818, 4,  "Sunday PM To Hour");
+            // resp.Property = GetStringFieldValue(InputLine, 1469, 1, "Property");
 
             resp.ProvLangCodeGroup33x    = GetStringFieldValue(InputLine, 7822, 66, "Provider Language Group (33x)");
             
@@ -281,6 +320,36 @@ namespace MH.PEF.BLL
 
         }
 
-      
+
+        #region REPEAT- Logic 
+        public static string GetStringFieldValueforRepeat(string lineData, string fieldName)
+        {
+            switch(fieldName)
+            {
+                case "CustEssentialProvIndGroup5x":
+
+
+                default:
+                    Console.WriteLine("Nothing");
+                    break;
+
+            }
+            //var splitString = lineData.Substring(startPos - 1, length);
+            //if (String.IsNullOrEmpty(splitString) || String.IsNullOrWhiteSpace(splitString))
+            //{
+            //    return null;
+            //}
+            //else
+            //{
+            //    return splitString.Trim();
+            //}
+
+
+
+            return string.Empty;
+        }
+
+        #endregion
+
     }
 }

@@ -11,6 +11,9 @@ namespace MH.PEF.BLL
     {
         public static void WriteToCsvFile(this DataTable dataTable, string filePath)
         {
+            var filecount = "01";
+            var FileName = "PEFExtract-" + filecount +".csv";
+           var fullpath =  filePath + FileName;
             StringBuilder fileContent = new StringBuilder();
 
             foreach (var col in dataTable.Columns)
@@ -30,7 +33,7 @@ namespace MH.PEF.BLL
                 fileContent.Replace(",", System.Environment.NewLine, fileContent.Length - 1, 1);
             }
 
-            System.IO.File.WriteAllText(filePath, fileContent.ToString());
+            System.IO.File.WriteAllText(fullpath, fileContent.ToString());
         }
     }
 }

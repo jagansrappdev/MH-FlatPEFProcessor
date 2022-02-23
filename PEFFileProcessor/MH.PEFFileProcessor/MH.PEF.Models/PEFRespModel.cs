@@ -36,38 +36,47 @@ namespace MH.PEF.Models
         public string MailingCity { get; set; }
         public string MailingState { get; set; }
         public string MailingZip { get; set; }
+        // Refer:Medicaid Health Plan Action Reason Code Current
         public string ContractClass { get; set; }
         public string ContractEffectiveDate { get; set; }
         public string ContractEndDate { get; set; }
+        //Refer : Medicaid Health Plan Action Reason Code Previous1
         public string ContractClassPrev01 { get; set; }
         public string ContractEffDatePrev01 { get; set; }
         public string ContractEndDatePrev01 { get; set; }
+        // Refer: Medicaid Health Plan Action Reason Code Previous2
         public string ContractClassPrev02 { get; set; }
         public string ContractEffDatePrev02 { get; set; }
         public string ContractEndDatePrev02 { get; set; }
         // Refer: Retrodate Trigger for Medicaid Health Plan
         public string CustAttRetrodateTrigger { get; set; }
+
+      // Refer:  Health Choice Health Plan Action Reason Code Current
         public string HCContractClass { get; set; }
         public string HCContractEffDate { get; set; }
         public string HCContractEndDate { get; set; }
+
+        // Refer: Health Choice Health Plan End Date Previous1
         public string HCContractClassPrev01 { get; set; }
         public string HCContractEffDatePrev01 { get; set; }
-
         public string HCContractEndDatePrev01 { get; set; }
+
+        //Refer: Health Choice Health Plan Action Reason Code2
         public string HCContractClassPrev02 { get; set; }
         public string HCContractEffDatePrev02 { get; set; }
-
         public string HCContractEndDatePrev02 { get; set; }
         // Refer: Retrodate Trigger for Health Choice Health Plan
         public string HCCustAttRetrodateTrigger { get; set; }
-       // public string Filler654 { get; set; }
+        // public string Filler654 { get; set; }
+
+        //Refer: Office Administrator Last Name
         public string OfcAdminLastname { get; set; }
-
         public string OfcAdminFirstname { get; set; }
-
         public string OfcAdminMiddlename { get; set; }
         public string OfcAdminEmail { get; set; }
         public string OfcAdminPhone { get; set; }
+
+        // Refer: Service Location Code (key)
         public string ProvSvcLocCode { get; set; }
         public string ProvSvcLocBeginDt { get; set; }
         public string ProvSvcLocEndDt { get; set; }
@@ -76,27 +85,29 @@ namespace MH.PEF.Models
         public string ProvSvcLocAddress2 { get; set; }
         public string ProvSvcLocCity { get; set; }
         public string ProvSvcLocState { get; set; }
-
         public string ProvSvcLocZip { get; set; }
         public string ProvSvcLocCountryCode { get; set; }
         public string ProvSvcLocPhone { get; set; }
         public string ProvSvcLocSiteVisitIndicator { get; set; }
 
-        //Not Sure of This 
+        // #1. REPEATS-1 ; Refer :Essential Provider Indicator Group(5x)
         public string CustEssentialProvIndGroup5x { get; set; }
-        //Not sure What is "REPEAT" means
-       //  public string CustEssentialProvInd { get; set; }
-        public string CustOthrProvIndGroup2x { get; set; }
-        // missing Start Position
-       // public string CustOthrProvIndicator { get; set; }
-        public string CustDHHSSPTierGroup5x { get; set; }
-        //Repeats : no start Position
-     //   public string DHHSSpAMHTierTypeCode { get; set; }
-      //  public string DHHSSpAMHTierEffectiveDt{ get; set; }
-      //  public string DHHSSpAMHTierEndDt { get; set; }
-        public string ProvTaxonomyGroup20x { get; set; }
+        // Length: 2 
+        public string CustEssentialProvIndicator { get; set; }
 
-        /*
+        // #2. REPEATS-2 ; Refer: Other Provider Indicator Group (2x)
+        public string CustOthrProvIndGroup2x { get; set; }
+        public string CustOthrProvIndicator { get; set; }
+
+        // #3. REPEATS-3 ; Refer: DHHS SP AMH Tier Information Group (5x)
+        public string CustDHHSSPAMHTierGroup5x { get; set; }
+        //Length: 1 
+          public string DHHSSpAMHTierTypeCode { get; set; }      //Length: 1 
+         public string DHHSSpAMHTierEffectiveDt{ get; set; }      //Length: 10
+         public string DHHSSpAMHTierEndDt { get; set; }  //     //Length: 10 
+
+        // #4. REPEATS-4 ; Refer: Provider Taxonomy Group (20x) ( *** Imp) 
+        public string ProvTaxonomyGroup20x { get; set; }
          //Repeats : no start Position
         public string TaxonomyCode { get; set; }
         public string TaxonomyLvl2Code { get; set; }
@@ -115,20 +126,17 @@ namespace MH.PEF.Models
 
         public string TaxonomyCodeRetroTrigger{ get; set; }
 
-       // public string Filler60of3649Pos { get; set; }
+        // public string Filler60of3649Pos { get; set; }
 
-        */
         public string ProvTitle { get; set; }
         public string PresumptiveEligInd { get; set; }
-        public string ProvBizTypeGroup3x { get; set; }
-        /*
-        //Repeats : no start Position
-       public string ProvBizTypeCode { get; set; }
-       public string ProvBizTypeBeginDt { get; set; }
-       public string ProvBizTypeEndDt { get; set; }
 
-       */
-    
+        // #5. REPEATS-5 ; Refer: Provider Business Type Group (3x)
+        public string ProvBizTypeGroup3x { get; set; }
+        public string ProvBizTypeCode { get; set; }
+        public string ProvBizTypeBeginDt { get; set; }
+        public string ProvBizTypeEndDt { get; set; }
+        //
         public string CLIACertNumber { get; set; }
         public string CLIACertType { get; set; }
         public string CLIABeginDt { get; set; }
@@ -136,14 +144,17 @@ namespace MH.PEF.Models
         public string CLIACertActionReasonCode { get; set; }
 
         // PEF Expansion : New Data Below 
+
+        // #6. REPEATS ; Refer: Affiliation Organization Group (10x)
         public string AffilOrgGroup10x { get; set; }
-
-      //  public string AffilOrgSvcLocation { get; set; }
-        // HAs repeats fields
-      //  public string AffilOrgBeginDt { get; set; }
-       // public string AffilOrgEndDt { get; set; }
-
-
+        public string AffilOrgTypeCode { get; set; }
+        public string AffilOrgNPI { get; set; }
+        public string AffilOrgTaxId { get; set; }
+        public string AffilOrgName { get; set; }
+        public string AffilOrgSvcLocation { get; set; }
+        public string AffilOrgBeginDt { get; set; }
+        public string AffilOrgEndDt { get; set; }
+        // regular
         public string FirstNameOf1099 { get; set; }
         public string MiddleNameOf1099 { get; set; }
         public string LastNameOf1099 { get; set; }
@@ -159,21 +170,14 @@ namespace MH.PEF.Models
         public string SvcLocAfterHrsPhone { get; set; }
         //Service Location Fax Number
         public string SvcLocAfterHrsFax { get; set; }
+
+        // #7. REPEATS ; Refer: Servicing Counties Group (100x))
         public string SvcCountiesGroup100x { get; set; }
-        /*
-         // Repeating fields
+       
         public string SvcCountyCode { get; set; }
         public string SvcCountyBeginDt { get; set; }
         public string SvcCountyEndDt { get; set; }
-      
-
-        */
-
-        /*
-         * Left some properties as I am not clear on what to do with them 
-         * 
-         */
-
+  
         public string HONetworkLead { get; set; }
         public string HODomainHousingSvcProvInd { get; set; }
         public string HODomainInterPrsnSafetyInd { get; set; }
@@ -183,8 +187,39 @@ namespace MH.PEF.Models
 
         public string Hours24Ind { get; set; }
         // some more fields 
+        public string MonAMFrmHr { get; set; }
+        public string MonAMToHr { get; set; }
+        public string MonPMFrmHr { get; set; }
+        public string MonPMToHr { get; set; }
+        public string TueAMFrmHr { get; set; }
+        public string TueAMToHr { get; set; }
+        public string TuePMFrmHr { get; set; }
+        public string TuePMToHr { get; set; }
+        public string WedAMFrmHr { get; set; }
+        public string WedAMToHr { get; set; }
+        public string WedPMFrmHr { get; set; }
+        public string WedPMToHr { get; set; }
+        public string ThuAMFrmHr { get; set; }
+        public string ThuAMToHr { get; set; }
+        public string ThuPMFrmHr { get; set; }
+        public string ThuPMToHr { get; set; }
+        public string FriAMFrmHr { get; set; }
+        public string FriAMToHr { get; set; }
+        public string FriPMFrmHr { get; set; }
+        public string FriPMToHr { get; set; }
+        public string SatAMFrmHr { get; set; }
+        public string SatAMToHr { get; set; }
+        public string SatPMFrmHr { get; set; }
+        public string SatPMToHr { get; set; }
+        public string SunAMFrmHr { get; set; }
+        public string SunAMToHr { get; set; }
+        public string SunPMFrmHr { get; set; }
+        public string SunPMToHr { get; set; }
+
+        // #8. REPEATS ; Refer: Provider Language Group (33x)
         public string ProvLangCodeGroup33x { get; set; }
-      //  public string ProvLanguage { get; set; }
+        public string ProvLanguage { get; set; }
+
         public string MaleAgeGroupcode { get; set; }
         public string FemaleAgeGroupcode { get; set; }
 
