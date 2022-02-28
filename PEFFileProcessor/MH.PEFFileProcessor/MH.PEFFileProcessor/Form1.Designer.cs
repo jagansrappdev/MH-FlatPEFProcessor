@@ -85,6 +85,7 @@ namespace MH.PEFFileProcessor
             this.btnProcessAllfiles.TabIndex = 4;
             this.btnProcessAllfiles.Text = "Process All Files";
             this.btnProcessAllfiles.UseVisualStyleBackColor = true;
+            this.btnProcessAllfiles.Click += new System.EventHandler(this.btnProcessAllfiles_Click);
             // 
             // btnCreateDbTbl
             // 

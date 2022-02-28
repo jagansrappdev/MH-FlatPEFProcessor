@@ -1,4 +1,5 @@
 ﻿using MH.PEF.Models;
+using MH.PEF.Models.PEF;
 using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,7 @@ namespace MH.PEF.BLL
                 using (var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction))
                 {
                     bulkCopy.BatchSize = 100;
-                    bulkCopy.DestinationTableName = "dbo.TestPEF2";
+                    bulkCopy.DestinationTableName = "dbo.PEFRespModel2";
                     try
                     {
                         bulkCopy.WriteToServer(InputTbl);
@@ -208,10 +209,10 @@ namespace MH.PEF.BLL
             resp.StateOf1099                    = GetStringFieldValue(InputLine, 5363, 2, "1099 Addr State");
             resp.ZipOf1099                      = GetStringFieldValue(InputLine, 5365, 15, "1099 Addr Zip");
            
-            resp.AttendingOrRenderingInd = GetStringFieldValue(InputLine, 5380, 1, "Attending/Rendering Only Indicator");
-            resp.OutofStateLimitEnrollInd = GetStringFieldValue(InputLine, 5381, 1, "Out of State Limited Enrollment Indicator");
-            resp.SvcLocAfterHrsPhone = GetStringFieldValue(InputLine, 5382, 10, "Service Location After Hours Phone Number");
-            resp.SvcLocAfterHrsFax = GetStringFieldValue(InputLine, 5392, 10, "Service Location Fax Number");
+            resp.AttendingOrRenderingInd        = GetStringFieldValue(InputLine, 5380, 1, "Attending/Rendering Only Indicator");
+            resp.OutofStateLimitEnrollInd       = GetStringFieldValue(InputLine, 5381, 1, "Out of State Limited Enrollment Indicator");
+            resp.SvcLocAfterHrsPhone            = GetStringFieldValue(InputLine, 5382, 10, "Service Location After Hours Phone Number");
+            resp.SvcLocAfterHrsFax              = GetStringFieldValue(InputLine, 5392, 10, "Service Location Fax Number");
             //
             resp.SvcCountiesGroup100x = GetStringFieldValue(InputLine, 5402, 2300, "Servicing Counties Group (100x)");
             //
@@ -279,10 +280,10 @@ namespace MH.PEF.BLL
             resp.BHDisruptiveSvcInd      = GetStringFieldValue(InputLine, 7898, 1, "Behaviorally Disruptive Services Indicator ");
             resp.DeafHearingSvcInd       = GetStringFieldValue(InputLine, 7899, 1, "Deaf Hearing Impaired Services Indicator ");
             resp.PhyhandicappedSvcInd    = GetStringFieldValue(InputLine, 7900, 1, "Physically Handicapped Services Indicator ");
-            resp.BlindSvcInd             = GetStringFieldValue(InputLine, 7901, 1, "Blind Visually Impaired Services Indicator");
-            resp.IDSvcInd                = GetStringFieldValue(InputLine, 7902, 1, "Intellectual and Development Disability Services Indicator");
-            resp.SASvcInd                = GetStringFieldValue(InputLine, 7903, 1, "Sexually Aggressive Services Indicator");
-            resp.TDDTTYEquipInd = GetStringFieldValue(InputLine, 7904, 1, "TDD TTY Equipped Indicator");
+            resp.BlindSvcInd    = GetStringFieldValue(InputLine, 7901, 1, "Blind Visually Impaired Services Indicator");
+            resp.IDSvcInd = GetStringFieldValue(InputLine, 7902, 1, "Intellectual and Development Disability Services Indicator");
+            resp.SASvcInd     = GetStringFieldValue(InputLine, 7903, 1, "Sexually Aggressive Services Indicator");
+            resp.TDDTTYEquipInd         = GetStringFieldValue(InputLine, 7904, 1, "TDD TTY Equipped Indicator");
 
             resp.DHHSBHTCMType          = GetStringFieldValue(InputLine, 7905, 1, "DHHS BH TCM Type");
             resp.DHHSBHTCMEffectiveDt   = GetStringFieldValue(InputLine, 7906, 10, "DHHS BH TCM Effective Date");
@@ -297,17 +298,22 @@ namespace MH.PEF.BLL
 
         }
 
-
-        public static void CreateSqlTblforPEF()
+        //string PEFMasterDTOTblname , string PEFVendorDTOTblName
+        public static void CreateSqlTblforPEF( )
         {
             try {
                 var dbFactory = new OrmLiteConnectionFactory(_MHdbConnStr, SqlServerDialect.Provider);
 
                 using (var db = dbFactory.Open())
                 {
-                    db.CreateSchema("Schema");
-                    //  db.CreateTableIfNotExists<TestClass1>();
-                    db.CreateTableIfNotExists<Test02>();
+                    // Create a d/b table with a DTO class 
+                   // db.CreateTableIfNotExists<PEFRespModel>();
+                    
+                    db.CreateTableIfNotExists<PEFMasterDTO>();
+                    db.CreateTableIfNotExists<PEFVendorDTO>();
+
+                    //Create a table with a specific  d/b Schema 
+                    //  db.CreateSchema("Schema");
                 }
 
 

@@ -67,8 +67,8 @@ namespace MH.PEFFileProcessor
                 {
                     var dt = ProcessPEFData.ToDataTable(respObj);
                     //Export to csv 
-                    MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
-                  // ProcessPEFData.PerformDBInsertion(dt);
+                  //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                   ProcessPEFData.PerformDBInsertion(dt);
 
                 }
 
@@ -227,6 +227,9 @@ namespace MH.PEFFileProcessor
         {
             try
             {
+
+                
+
                 foreach (var file in pefFilespaths)
                 {
                     var path = file;
@@ -240,6 +243,8 @@ namespace MH.PEFFileProcessor
                         var item = ProcessPEFData.ProcessLine(line);
                         respObj.Add(item);
                     }
+
+
 
                     // Insert to databse 
                     if (respObj.Any())
@@ -259,7 +264,8 @@ namespace MH.PEFFileProcessor
 
         private void btnCreateDbTbl_Click(object sender, EventArgs e)
         {
-            ProcessPEFData.CreateSqlTblforPEF();
+            // Pass table Names  
+            ProcessPEFData.CreateSqlTblforPEF( );
         }
 
 
@@ -367,6 +373,10 @@ namespace MH.PEFFileProcessor
 
         #endregion
 
+        private void btnProcessAllfiles_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
