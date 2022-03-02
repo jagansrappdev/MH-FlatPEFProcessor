@@ -1,13 +1,18 @@
 ﻿using MH.PEF.BLL;
+using MH.PEF.BLL.BizLogic;
+using MH.PEF.BLL.Utilities;
 using MH.PEF.Models;
+using MH.PEF.Models.PEF;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -67,8 +72,8 @@ namespace MH.PEFFileProcessor
                 {
                     var dt = ProcessPEFData.ToDataTable(respObj);
                     //Export to csv 
-                  //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
-                   ProcessPEFData.PerformDBInsertion(dt);
+                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                    ProcessPEFData.PerformDBInsertion(dt);
 
                 }
 
@@ -151,7 +156,7 @@ namespace MH.PEFFileProcessor
             var txtFiles = Directory.EnumerateFiles(src, "*.txt");
             foreach (string currentFile in txtFiles)
             {
-                var filepath = src + currentFile;
+                var filepath = currentFile;
                 resp.Add(filepath);
             }
             return resp;
@@ -167,53 +172,53 @@ namespace MH.PEFFileProcessor
             try
             {
 
-            
-            // Call the ProcessLine to Pick Elements 
-            var res = ProcessPEFData.ProcessLine(Line);
-            //1
-            if (res.CustEssentialProvIndGroup5x != null)
-            {
-                  GetStringFieldValueforRepeat(res.CustEssentialProvIndGroup5x, "CustEssentialProvIndGroup5x", ref  res);
-            }
-            //2
-            if (res.CustOthrProvIndGroup2x != null)
-            {
-                 GetStringFieldValueforRepeat(res.CustOthrProvIndGroup2x, "CustOthrProvIndGroup2x", ref res);
-            }
-            //3
-            if (res.CustDHHSSPAMHTierGroup5x != null)
-            {
-                GetStringFieldValueforRepeat(res.CustDHHSSPAMHTierGroup5x, "CustDHHSSPAMHTierGroup5x", ref res);
-            }
-            //4
-            if (res.ProvTaxonomyGroup20x != null)
-            {
-               GetStringFieldValueforRepeat(res.ProvTaxonomyGroup20x, "ProvTaxonomyGroup20x", ref res);
-            }
-            //5
-            if (res.ProvBizTypeGroup3x != null)
-            {
-                GetStringFieldValueforRepeat(res.ProvBizTypeGroup3x, "ProvBizTypeGroup3x", ref res);
-            }
-            //6
-            if (res.AffilOrgGroup10x != null)
-            {
-                GetStringFieldValueforRepeat(res.AffilOrgGroup10x, "AffilOrgGroup10x", ref res);
-            }
-            //7
-            if (res.SvcCountiesGroup100x != null)
-            {
-                GetStringFieldValueforRepeat(res.SvcCountiesGroup100x, "SvcCountiesGroup100x", ref res);
-            }
-            //8
-            if (res.ProvLangCodeGroup33x != null)
-            {
-                GetStringFieldValueforRepeat(res.ProvLangCodeGroup33x, "ProvLangCodeGroup33x", ref res);
-            }
+
+                // Call the ProcessLine to Pick Elements 
+                var res = ProcessPEFData.ProcessLine(Line);
+                //1
+                if (res.CustEssentialProvIndGroup5x != null)
+                {
+                    GetStringFieldValueforRepeat(res.CustEssentialProvIndGroup5x, "CustEssentialProvIndGroup5x", ref res);
+                }
+                //2
+                if (res.CustOthrProvIndGroup2x != null)
+                {
+                    GetStringFieldValueforRepeat(res.CustOthrProvIndGroup2x, "CustOthrProvIndGroup2x", ref res);
+                }
+                //3
+                if (res.CustDHHSSPAMHTierGroup5x != null)
+                {
+                    GetStringFieldValueforRepeat(res.CustDHHSSPAMHTierGroup5x, "CustDHHSSPAMHTierGroup5x", ref res);
+                }
+                //4
+                if (res.ProvTaxonomyGroup20x != null)
+                {
+                    GetStringFieldValueforRepeat(res.ProvTaxonomyGroup20x, "ProvTaxonomyGroup20x", ref res);
+                }
+                //5
+                if (res.ProvBizTypeGroup3x != null)
+                {
+                    GetStringFieldValueforRepeat(res.ProvBizTypeGroup3x, "ProvBizTypeGroup3x", ref res);
+                }
+                //6
+                if (res.AffilOrgGroup10x != null)
+                {
+                    GetStringFieldValueforRepeat(res.AffilOrgGroup10x, "AffilOrgGroup10x", ref res);
+                }
+                //7
+                if (res.SvcCountiesGroup100x != null)
+                {
+                    GetStringFieldValueforRepeat(res.SvcCountiesGroup100x, "SvcCountiesGroup100x", ref res);
+                }
+                //8
+                if (res.ProvLangCodeGroup33x != null)
+                {
+                    GetStringFieldValueforRepeat(res.ProvLangCodeGroup33x, "ProvLangCodeGroup33x", ref res);
+                }
 
 
-            //return fial response
-            return res;
+                //return fial response
+                return res;
             }
             catch (Exception ex)
             {
@@ -223,73 +228,114 @@ namespace MH.PEFFileProcessor
 
 
         // #1. Process All Files 
-        private void ProcessALLPEFfiles(List<string> pefFilespaths)
-        {
-            try
-            {
-
-                
-
-                foreach (var file in pefFilespaths)
-                {
-                    var path = file;
-                    //Declare
-                    var respObj = new List<PEFRespModel>();
-                    List<string> allPEFLines = new List<string>();
-                    //read all lines 
-                    foreach (string line in File.ReadLines(path))
-                    {
-                        // Call the ProcessLine to Pick Elements 
-                        var item = ProcessPEFData.ProcessLine(line);
-                        respObj.Add(item);
-                    }
+        //private void ProcessALLPEFfiles(List<string> pefAllSplitFilespath)
+        //{
+        //    try
+        //    {
+        //        var respObj = new List<PEFMasterDTO>();
+        //        // vendor table 
+        //        var respVendorObj = new List<PEFVendorDTO>();
+        //        // 
+        //        int MhTrnxId = 0;
 
 
+        //        // parallel 
+        //        Parallel.ForEach(pefAllSplitFilespath, splitFile =>
+        //        {
 
-                    // Insert to databse 
-                    if (respObj.Any())
-                    {
-                        var dt = ProcessPEFData.ToDataTable(respObj);
-                        ProcessPEFData.PerformDBInsertion(dt);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
+        //            // Read File 
+        //            foreach (string line in File.ReadLines(splitFile))
+        //            {
+        //                // single line processing logic
+        //                var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
 
-            }
-        }
+        //                // Set Vendor Tbl data : only whne EnrollType == 2 Or 4
+        //                if (item.ProvEnrollmentType == "2" || item.ProvEnrollmentType == "4")
+        //                {
+        //                    var vendoritems = PEFProcessorLogic.ProcessPEFVendorDTO(item, MhTrnxId);
+
+        //                }
+
+        //                // add to tbl 
+        //                respObj.Add(item);
+
+        //                //increment counter 
+        //                MhTrnxId++;
+        //            }
+        //            Thread.Sleep(10);
+
+        //            // Insert to databse 
+        //            if (respObj.Any())
+        //            {
+        //                // ** Commenting out for now to test 
+        //                /*
+        //                var dt = ProcessPEFData.ToDataTable(respObj);
+        //                ProcessPEFData.PerformDBInsertion(dt);
+        //                */
+        //            }
+        //        } );
+
+        //        //foreach (var file in pefFilespaths)
+        //        //{
+        //        //    var path = file;
+        //        //    //Declare
+        //        //    var respObj = new List<PEFRespModel>();
+        //        //    List<string> allPEFLines = new List<string>();
+        //        //    //read all lines 
+        //        //    foreach (string line in File.ReadLines(path))
+        //        //    {
+        //        //        // Call the ProcessLine to Pick Elements 
+        //        //        var item = ProcessPEFData.ProcessLine(line);
+        //        //        respObj.Add(item);
+        //        //    }
+
+
+        //        //    // Insert to databse 
+        //        //    if (respObj.Any())
+        //        //    {
+        //        //        var dt = ProcessPEFData.ToDataTable(respObj);
+        //        //        ProcessPEFData.PerformDBInsertion(dt);
+        //        //    }
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+        //    }
+        //}
 
         #endregion
 
         private void btnCreateDbTbl_Click(object sender, EventArgs e)
         {
             // Pass table Names  
-            ProcessPEFData.CreateSqlTblforPEF( );
+            //  ProcessPEFData.CreateSqlTblforPEF( );
+            PEFUtilities.CreateSqlTblforPEFFile();
         }
 
 
 
         #region REPEAT- Logic 
-        public  void  GetStringFieldValueforRepeat(string RepeatedStr, string fieldName , ref PEFRespModel res )
+        public void GetStringFieldValueforRepeat(string RepeatedStr, string fieldName, ref PEFRespModel res)
         {
             try
             {
 
-            switch (fieldName)
-            {
-                case "CustEssentialProvIndGroup5x":
-                        if(RepeatedStr.Length > 1)
+                switch (fieldName)
+                {
+                    case "CustEssentialProvIndGroup5x":
+                        if (RepeatedStr.Length > 1)
                         {
-                            res.CustEssentialProvIndicator = ProcessPEFData.GetStringFieldValue(RepeatedStr ,1,2 , "Essential Provider Indicator");
-                        } else
+                            res.CustEssentialProvIndicator = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 2, "Essential Provider Indicator");
+                        }
+                        else
                         {
                             res.CustEssentialProvIndicator = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 1, "Essential Provider Indicator");
                         }
-                      
+
                         break;
 
-                case "CustOthrProvIndGroup2x":
+                    case "CustOthrProvIndGroup2x":
                         if (RepeatedStr.Length > 1)
                         {
                             res.CustOthrProvIndicator = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 2, "Other Provider Indicator");
@@ -298,72 +344,72 @@ namespace MH.PEFFileProcessor
                         {
                             res.CustOthrProvIndicator = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 1, "Other Provider Indicator");
                         }
-                 
-                    break;
+
+                        break;
 
 
-                case "CustDHHSSPAMHTierGroup5x":
-                    res.DHHSSpAMHTierTypeCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 1, "DHHS SP AMH Tier Type Code");
-                    res.DHHSSpAMHTierEffectiveDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 2, 10, "DHHS SP AMH Tier Type Effective Date");
-                    res.DHHSSpAMHTierEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 12, 10, "DHHS SP AMH Tier Type End Date");
-                    break;
+                    case "CustDHHSSPAMHTierGroup5x":
+                        res.DHHSSpAMHTierTypeCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 1, "DHHS SP AMH Tier Type Code");
+                        res.DHHSSpAMHTierEffectiveDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 2, 10, "DHHS SP AMH Tier Type Effective Date");
+                        res.DHHSSpAMHTierEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 12, 10, "DHHS SP AMH Tier Type End Date");
+                        break;
 
-                case "ProvTaxonomyGroup20x":
-                    res.TaxonomyCode               = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 10,  "Taxonomy Code");
-                    res.TaxonomyLvl2Code           = ProcessPEFData.GetStringFieldValue(RepeatedStr, 11, 10, "Taxonomy Level 2 Code");
-                    res.TaxonomyLvl3Code           = ProcessPEFData.GetStringFieldValue(RepeatedStr, 21, 10, "Taxonomy Level 3 Code");
-                    res.TaxonomyCodeStatusCurrent  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 22, 1,  "Taxonomy Code Status Current");
-                    res.TaxonomyCodeEffDateCurrent = ProcessPEFData.GetStringFieldValue(RepeatedStr, 23, 10, "Taxonomy Code Effective Date Current");
-                    res.TaxonomyCodeEndDateCurrent = ProcessPEFData.GetStringFieldValue(RepeatedStr, 33, 10, "Taxonomy Code End Date Current");
-                    res.TaxonomyCodeStatusPrev01   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 43, 1,  "Taxonomy Code Status Previous1");
-                    res.TaxonomyCodeEffDatePrev01  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 44, 10, "Taxonomy Code Effective Date Previous1");
-                    res.TaxonomyCodeEndDatePrev01  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 54, 10, "Taxonomy Code Effective Date Previous2");
-                    res.TaxonomyCodeStatusPrev02   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 64, 1, "Taxonomy Code Status Previous2");
-                    res.TaxonomyCodeEffDatePrev02  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 65, 10, "Taxonomy Code Effective Date Previous2");
-                    res.TaxonomyCodeEndDatePrev02  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 75, 10, "Taxonomy Code End Date Previous2");
-                    res.TaxonomyCodeRetroTrigger   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 85, 10, "Retrodate Trigger for Taxonomy");
-                    //Reset the main string : only here for now 
-                    res.ProvTaxonomyGroup20x = "JaganTest";
-                    break;
+                    case "ProvTaxonomyGroup20x":
+                        res.TaxonomyCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 10, "Taxonomy Code");
+                        res.TaxonomyLvl2Code = ProcessPEFData.GetStringFieldValue(RepeatedStr, 11, 10, "Taxonomy Level 2 Code");
+                        res.TaxonomyLvl3Code = ProcessPEFData.GetStringFieldValue(RepeatedStr, 21, 10, "Taxonomy Level 3 Code");
+                        res.TaxonomyCodeStatusCurrent = ProcessPEFData.GetStringFieldValue(RepeatedStr, 22, 1, "Taxonomy Code Status Current");
+                        res.TaxonomyCodeEffDateCurrent = ProcessPEFData.GetStringFieldValue(RepeatedStr, 23, 10, "Taxonomy Code Effective Date Current");
+                        res.TaxonomyCodeEndDateCurrent = ProcessPEFData.GetStringFieldValue(RepeatedStr, 33, 10, "Taxonomy Code End Date Current");
+                        res.TaxonomyCodeStatusPrev01 = ProcessPEFData.GetStringFieldValue(RepeatedStr, 43, 1, "Taxonomy Code Status Previous1");
+                        res.TaxonomyCodeEffDatePrev01 = ProcessPEFData.GetStringFieldValue(RepeatedStr, 44, 10, "Taxonomy Code Effective Date Previous1");
+                        res.TaxonomyCodeEndDatePrev01 = ProcessPEFData.GetStringFieldValue(RepeatedStr, 54, 10, "Taxonomy Code Effective Date Previous2");
+                        res.TaxonomyCodeStatusPrev02 = ProcessPEFData.GetStringFieldValue(RepeatedStr, 64, 1, "Taxonomy Code Status Previous2");
+                        res.TaxonomyCodeEffDatePrev02 = ProcessPEFData.GetStringFieldValue(RepeatedStr, 65, 10, "Taxonomy Code Effective Date Previous2");
+                        res.TaxonomyCodeEndDatePrev02 = ProcessPEFData.GetStringFieldValue(RepeatedStr, 75, 10, "Taxonomy Code End Date Previous2");
+                        res.TaxonomyCodeRetroTrigger = ProcessPEFData.GetStringFieldValue(RepeatedStr, 85, 10, "Retrodate Trigger for Taxonomy");
+                        //Reset the main string : only here for now 
+                        res.ProvTaxonomyGroup20x = "JaganTest";
+                        break;
 
-                //
-                case "ProvBizTypeGroup3x":
-                    res.ProvBizTypeCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 1, "Provider Business Type Code");
-                    res.ProvBizTypeBeginDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 2, 10, "Provider Business Type Begin Date");
-                    res.ProvBizTypeEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 11, 10, "Provider Business Type End Date");
-                    break;
+                    //
+                    case "ProvBizTypeGroup3x":
+                        res.ProvBizTypeCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 1, "Provider Business Type Code");
+                        res.ProvBizTypeBeginDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 2, 10, "Provider Business Type Begin Date");
+                        res.ProvBizTypeEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 11, 10, "Provider Business Type End Date");
+                        break;
 
-                //
-                case "AffilOrgGroup10x":
-                    res.AffilOrgTypeCode    = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 2, "Affiliated Organization Type Code");
-                    res.AffilOrgNPI         = ProcessPEFData.GetStringFieldValue(RepeatedStr, 2, 10, "Affiliated Organization NPI/Atypical");
-                    res.AffilOrgTaxId       = ProcessPEFData.GetStringFieldValue(RepeatedStr, 12, 50, "Affiliated Organization Tax Id");
-                    res.AffilOrgName        = ProcessPEFData.GetStringFieldValue(RepeatedStr, 62, 50, "Affiliated Organization Name");
-                    res.AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(RepeatedStr, 112, 3, "Affiliated Organization Service Location Code");
-                    res.AffilOrgBeginDt     = ProcessPEFData.GetStringFieldValue(RepeatedStr, 115, 10, "Affiliated Organization Begin Date");
-                    res.AffilOrgEndDt       = ProcessPEFData.GetStringFieldValue(RepeatedStr, 125, 10, "Affiliated Organization End Date");
-                   
-                    break;
+                    //
+                    case "AffilOrgGroup10x":
+                        res.AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 2, "Affiliated Organization Type Code");
+                        res.AffilOrgNPI = ProcessPEFData.GetStringFieldValue(RepeatedStr, 2, 10, "Affiliated Organization NPI/Atypical");
+                        res.AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(RepeatedStr, 12, 50, "Affiliated Organization Tax Id");
+                        res.AffilOrgName = ProcessPEFData.GetStringFieldValue(RepeatedStr, 62, 50, "Affiliated Organization Name");
+                        res.AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(RepeatedStr, 112, 3, "Affiliated Organization Service Location Code");
+                        res.AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 115, 10, "Affiliated Organization Begin Date");
+                        res.AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 125, 10, "Affiliated Organization End Date");
 
-                //
-                case "SvcCountiesGroup100x":
-                    res.SvcCountyCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 3, "Servicing County Code");
-                    res.SvcCountyBeginDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 3, 10, "Servicing County Begin Date");
-                    res.SvcCountyEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 13, 10, "Servicing County End Date");
-                    break;
+                        break;
 
-                //
-                case "ProvLangCodeGroup33x":
-                    res.ProvLanguage = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 2, "Provider Language");
-                    break;
+                    //
+                    case "SvcCountiesGroup100x":
+                        res.SvcCountyCode = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 3, "Servicing County Code");
+                        res.SvcCountyBeginDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 3, 10, "Servicing County Begin Date");
+                        res.SvcCountyEndDt = ProcessPEFData.GetStringFieldValue(RepeatedStr, 13, 10, "Servicing County End Date");
+                        break;
+
+                    //
+                    case "ProvLangCodeGroup33x":
+                        res.ProvLanguage = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 2, "Provider Language");
+                        break;
 
 
-                default:
-                   // Console.WriteLine("Nothing");
-                    break;
+                    default:
+                        // Console.WriteLine("Nothing");
+                        break;
 
+                }
             }
-           }
             catch (Exception ex)
             {
                 throw ex;
@@ -373,7 +419,182 @@ namespace MH.PEFFileProcessor
 
         #endregion
 
+
+        #region Process ALL PEF Files(spiltted ) 
+
         private void btnProcessAllfiles_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var respObj = new List<PEFMasterDTO>();
+                // vendor table 
+                var respVendorObj = new List<PEFVendorDTO>();
+                // 
+                int MhTrnxId = 0;
+
+                //start the stopwatch for "for" loop
+                //   var sw = Stopwatch.StartNew();
+
+                //Read all files  
+                // var pefAllSplitFilespath = GetAllFilesFromDir(PEFOutputFilespath);
+                var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(PEFOutputFilespath);
+                // parallel 
+                Parallel.ForEach(pefAllSplitFilespath, splitFile =>
+                {
+
+                    // Read File 
+                    foreach (string line in File.ReadLines(splitFile))
+                    {
+                        // single line processing logic
+                        var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
+                        // add to tbl 
+                        respObj.Add(item);
+
+                    }
+
+                    //Errors: Collection was modified; enumeration operation may not execute
+                    ////Set vendor table 
+                    //if (respObj.Any())
+                    //{
+                    //    foreach(var item in respObj.ToList())
+                    //    {
+                    //        // Set Vendor Tbl data : only whne EnrollType == 2 Or 4
+                    //        if (item.ProvEnrollmentType == "2" || item.ProvEnrollmentType == "4")
+                    //        {
+                    //           if( !string.IsNullOrEmpty(item.AffilOrgGroup10x) )
+                    //             {
+                    //            var vendoritems = PEFProcessorLogic.ProcessPEFVendorDTO(item, MhTrnxId);
+                    //            respVendorObj.AddRange(vendoritems);
+                    //            //increment counter 
+                    //            MhTrnxId++;
+                    //              }
+
+                    //        }
+                    //    }
+                    //}
+                });
+
+                // Insert to databse 
+                if (respObj.Any())
+                {
+                    var dt = PEFUtilities.ToDataTable(respObj);
+                    //Export to csv 
+                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                    PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
+
+                }
+
+                //start the stopwatch for "Parallel.ForEach"
+                // var timeEmplased = sw.Elapsed.TotalSeconds;
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+
+        }
+
+        //#1. Process new PEF Model / each line 
+        public PEFMasterDTO ReadPEFMasterLine(string Line)
+        {
+            try
+            {
+                // Call the ProcessLine to Pick Elements 
+                var res = PEFProcessorLogic.ProcessPEFMasterDTOLine(Line);
+                //return final response
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        // #2. 
+
+
+        #endregion
+
+        private void btn1SplitPEfFileProcess_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                var respObj = new List<PEFMasterDTO>();
+                // vendor table 
+                //   var respVendorObj = new List<PEFVendorDTO>();
+                // 
+                //     int MhTrnxId = 0;
+
+
+
+                //Read all files  
+                // var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(PEFOutputFilespath);
+                // var totals = pefAllSplitFilespath.Count();
+
+
+                // foreach (var sp in pefAllSplitFilespath)
+                //  {
+                // var sp = pefAllSplitFilespath.ElementAt(2);
+              
+                // Read single file 
+                var PEFOutputFilePath = @"C:\Outputfiles\PEFfile21.txt";
+
+
+                foreach (string line in File.ReadLines(PEFOutputFilePath))
+                {
+                    // read single line 
+                    var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
+                    respObj.Add(item);
+                }
+
+                // Insert to databse 
+                if (respObj.Any())
+                {
+                    var dt = PEFUtilities.ToDataTable(respObj);
+                    //Export to csv 
+                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                    PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
+                }
+
+                //Set vendor table 
+                //if (respObj.Any())
+                //{
+                //    // filter criteria for vendor table 
+                //    var filteredAffilGroup = respObj.Where(x => x.AffilOrgGroup10x != null 
+                //                                                && ( x.ProvEnrollmentType == "2" || x.ProvEnrollmentType == "4" )).ToList();
+                //    foreach (var item in filteredAffilGroup)
+                //    {
+                //        // Set Vendor Tbl data : only whne EnrollType == 2 Or 4
+                //        if (item.ProvEnrollmentType == "2" || item.ProvEnrollmentType == "4")
+                //        {
+                //            if (!string.IsNullOrEmpty(item.AffilOrgGroup10x))
+                //            {
+                //                var vendoritems = PEFProcessorLogic.ProcessPEFVendorDTO(item, MhTrnxId);
+                //                respVendorObj.AddRange(vendoritems);
+                //                //increment counter 
+                //                MhTrnxId++;
+                //            }
+
+                //        }
+                //    }
+                //}
+
+
+                //    }
+                Display("DB Operation Completed  " + "\n"  );
+
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+
+        }
+
+        private void btn_Process_repeatgrp_Click(object sender, EventArgs e)
         {
 
         }

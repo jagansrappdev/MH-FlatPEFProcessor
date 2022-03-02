@@ -8,7 +8,7 @@ namespace MH.PEF.Models.PEF
 {
    public  class PEFMasterDTO
     {
-            public int ProvNPI { get; set; }
+            public string  ProvNPI { get; set; }
             public string ProvIdofNCTracks { get; set; }
             public string ProvEnrollmentType { get; set; }
             public string ProvSSN { get; set; }

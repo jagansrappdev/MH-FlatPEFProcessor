@@ -15,11 +15,13 @@ namespace MH.PEF.Models.PEF
         // Enrol-type  = 2 & 4 for Prov.Vendor table
         public string ProvEnrollmentType { get; set; }
 
+        public string ProvTaxId { get; set; }
+
         // Set A TrxSetId for tracking 
         public int MhTrnxId { get; set; }
         //
         // #6. REPEATS ; Refer: Affiliation Organization Group (10x)
-        public string AffilOrgGroup10x { get; set; }
+     //   public string AffilOrgGroup10x { get; set; }
         public string AffilOrgTypeCode { get; set; }
         public string AffilOrgNPI { get; set; }
         public string AffilOrgTaxId { get; set; }
