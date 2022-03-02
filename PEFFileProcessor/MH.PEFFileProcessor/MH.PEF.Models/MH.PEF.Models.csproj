@@ -78,7 +78,9 @@
     <Compile Include="PEFRespModel.cs" />
     <Compile Include="PEFileLayoutModel.cs" />
     <Compile Include="PEF\PEFMasterDTO.cs" />
+    <Compile Include="PEF\PEFProvAffilGroupDTO.cs" />
     <Compile Include="PEF\PEFProviderOfficeDTO.cs" />
+    <Compile Include="PEF\PEFProvTaxonomyGrp.cs" />
     <Compile Include="PEF\PEFVendorDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test02.cs" />

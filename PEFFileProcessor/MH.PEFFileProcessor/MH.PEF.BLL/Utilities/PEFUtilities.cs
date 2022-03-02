@@ -26,8 +26,7 @@ namespace MH.PEF.BLL.Utilities
               SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["JaganLocalDB"].ConnectionString){ AsynchronousProcessing = true}.ToString()
              */
         }
-
-        //PEFUtilities.GetStringValue()
+         
         public static string GetStringValue(string lineData, int startPos, int length, string fieldName)
         {
             var splitString = lineData.Substring(startPos - 1, length);
@@ -52,6 +51,21 @@ namespace MH.PEF.BLL.Utilities
             else
             {
                 return splitString;
+            }
+
+        }
+
+
+        public static string GetStringValueTrimEND(string lineData, int startPos, int length, string fieldName)
+        {
+            var splitString = lineData.Substring(startPos - 1, length);
+            if (String.IsNullOrEmpty(splitString) || String.IsNullOrWhiteSpace(splitString))
+            {
+                return null;
+            }
+            else
+            {
+                return splitString.TrimEnd();
             }
 
         }
@@ -148,6 +162,26 @@ namespace MH.PEF.BLL.Utilities
                     //  db.CreateSchema("Schema");
                 }
 
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
+        }
+
+        public static void CreateSqlTblforPEFRepeatGroups()
+        {
+            try
+            {
+                var dbFactory = new OrmLiteConnectionFactory(_MHdbConnStr, SqlServerDialect.Provider);
+
+                using (var db = dbFactory.Open())
+                {
+                    db.CreateTableIfNotExists<PEFProvTaxonomyGrp>();
+                }
 
             }
             catch (Exception ex)

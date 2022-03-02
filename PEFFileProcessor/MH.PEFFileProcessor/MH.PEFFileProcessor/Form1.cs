@@ -308,9 +308,25 @@ namespace MH.PEFFileProcessor
 
         private void btnCreateDbTbl_Click(object sender, EventArgs e)
         {
-            // Pass table Names  
-            //  ProcessPEFData.CreateSqlTblforPEF( );
-            PEFUtilities.CreateSqlTblforPEFFile();
+            try
+            {
+                // Pass table Names  
+                //  ProcessPEFData.CreateSqlTblforPEF( );
+                //#1
+                // PEFUtilities.CreateSqlTblforPEFFile();
+                // #2
+                PEFUtilities.CreateSqlTblforPEFRepeatGroups();
+
+                //Print msg
+                Display("!Table Creation completed ! " + "\n" );
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+           
+            
         }
 
 
@@ -596,6 +612,50 @@ namespace MH.PEFFileProcessor
 
         private void btn_Process_repeatgrp_Click(object sender, EventArgs e)
         {
+            var respObj = new List<PEFProvTaxonomyGrp>();
+            var parsedLineObj = new List<ProvTaxonomyLineDTO>();
+
+            var TaxonomyChunkSizeTax = 163;
+
+            try
+            {
+                var PEFOutputFilePath = @"C:\Outputfiles\PEFfile1.txt";
+
+
+                foreach (string line in File.ReadLines(PEFOutputFilePath))
+                {
+                    // read single line 
+                    var item = PEFProcessorLogic.ProcessPEFTaxonomyLine(line);
+                    parsedLineObj.Add(item);
+                }
+
+                // Prep Taxonomy table 
+                if (parsedLineObj.Any())
+                {
+
+                    var filteredObj = parsedLineObj.Where(x => x.ProvTaxonomyGroup20x != null).ToList();
+                    // 
+                    var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTO(filteredObj, TaxonomyChunkSizeTax);
+
+                   
+                }
+
+                // Insert to databse 
+                if (respObj.Any())
+                {
+                  //  var dt = PEFUtilities.ToDataTable(respObj);
+                    //Export to csv 
+                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                 //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
 
         }
     }
