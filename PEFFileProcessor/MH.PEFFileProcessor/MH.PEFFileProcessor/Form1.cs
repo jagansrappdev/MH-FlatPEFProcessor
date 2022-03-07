@@ -143,19 +143,15 @@ namespace MH.PEFFileProcessor
         {
             try
             {
-                // Pass table Names  
-                //  ProcessPEFData.CreateSqlTblforPEF( );
                 //#1
                 PEFUtilities.CreateSqlTblforPEFFile();
-                // #2
-                //   PEFUtilities.CreateSqlTblforPEFRepeatGroups();
 
                 //Print msg
-                Display("!Table Creation completed ! " + "\n");
+                Display("! DB Tables Creation completed ! " + "\n");
             }
             catch (Exception ex)
             {
-                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                Display("!!!! BAD:  error in DB Tables Creation ! " + "\n" + ex.ToString());
                 // throw ex;
             }
 
@@ -247,8 +243,17 @@ namespace MH.PEFFileProcessor
             var DhhsSPAmhChunkSize = 21;
             var dhhsSpRptTImes = 5;
             // removed the filler size in chunk size 
-            var TaxonomyChunkSizeTax = 103;
+            var TaxonomyChunkSize = 103;
             var taxonmyRptTimes = 20;
+            // Prov Biz Type 
+            var ProvBizTypeGrpChunkSize = 21;
+            var ProvBizTypeGrpRptTimes = 3;
+            // affil 
+            var AffilOrgGroupChunkSize = 135;
+            var AffilOrgRptTimes = 10;
+            // 
+            var SvcCountiesChunkSize = 23;
+            var SvcCountiesRptTimes = 100;
 
 
             try
@@ -263,34 +268,60 @@ namespace MH.PEFFileProcessor
                     // process Dhhs Sp AMH repeat
                     if ( !string.IsNullOrEmpty(  rptItem.DhhsSpAmhTierInfoGroup5x))
                     {
-                        var DhhsSpResp = PEFProcessorLogic.GetDhhsSpAmhRptItem(rptItem, DhhsSPAmhChunkSize , dhhsSpRptTImes);
+                        var DhhsSpResp = PEFProcessorLogic.GetDhhsAMhTierInfoGrpList(rptItem, DhhsSPAmhChunkSize , dhhsSpRptTImes);
                         // insert to d/b
                         if (DhhsSpResp.Any())
                         {
                          //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
                          //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
                         }
-
                     }
-
                     // process Taxonomy 
                     if (!string.IsNullOrEmpty(rptItem.ProvTaxonomyGroup20x))
                     {
                         // Get List of Prov-Taxonmy group lines 
-                        var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(rptItem, TaxonomyChunkSizeTax , taxonmyRptTimes);
+                        var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(rptItem, TaxonomyChunkSize, taxonmyRptTimes);
                         // insert to d/b
                         if (pefTxnmyResp != null)
                         {
                             var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
                             PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
                         }
-
                     }
-
-
-
+                    // prov Biz type :
+                    if (!string.IsNullOrEmpty(rptItem.ProvBizTypeGroup3x))
+                    {
+                        var ProvBizTypeResp = PEFProcessorLogic.GetProvBizTypeGrpList(rptItem, ProvBizTypeGrpChunkSize, ProvBizTypeGrpRptTimes);
+                        // insert to d/b
+                        if (ProvBizTypeResp.Any())
+                        {
+                            //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
+                            //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                        }
+                    }
+                    // Affil Group
+                    if (!string.IsNullOrEmpty(rptItem.AffilOrgGroup10x))
+                    {
+                        var AffilOrgGrpList = PEFProcessorLogic.GetProvAffilGroupList(rptItem, AffilOrgGroupChunkSize, AffilOrgRptTimes);
+                        // insert to d/b
+                        if (AffilOrgGrpList.Any())
+                        {
+                            //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
+                            //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                        }
+                    }
+                    //
+                    if (!string.IsNullOrEmpty(rptItem.SvcCountiesGroup100x))
+                    {
+                        var SvcCountieGrpList = PEFProcessorLogic.GetSvcCountiesGrpList(rptItem, SvcCountiesChunkSize, SvcCountiesRptTimes);
+                        // insert to d/b
+                        if (SvcCountieGrpList.Any())
+                        {
+                            //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
+                            //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                        }
+                    }
                 }
-
                     // 1 
                  //   RunProvTaxonomy20xProcess(TaxonomyChunkSizeTax);
 

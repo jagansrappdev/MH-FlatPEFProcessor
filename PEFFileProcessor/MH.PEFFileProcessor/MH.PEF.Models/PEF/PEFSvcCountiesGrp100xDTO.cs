@@ -27,7 +27,12 @@ namespace MH.PEF.Models.PEF
         public string SvcCountyBeginDt { get; set; }
         [StringLength(10)]
         public string SvcCountyEndDt { get; set; }
+    }
 
-
+    public class SvcCountiesGrp
+    {
+        public string SvcCountyCode { get; set; }
+        public string SvcCountyBeginDt { get; set; }
+        public string SvcCountyEndDt { get; set; }
     }
 }

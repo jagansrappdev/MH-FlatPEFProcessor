@@ -21,9 +21,6 @@ namespace MH.PEF.Models.PEF
         public string ProvSvcLocCode { get; set; }
         // -- Unique key combination   -- END 
 
-        //
-      //  public string AffilOrgGroup10x { get; set; }
-        //
         [StringLength(2)]
         public string AffilOrgTypeCode { get; set; }
         [StringLength(10)]

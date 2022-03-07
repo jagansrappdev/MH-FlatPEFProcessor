@@ -14,7 +14,6 @@ namespace MH.PEF.Models.PEF
         public string ProvEnrollmentType { get; set; }
         // Refer: Service Location Code (key)
         public string ProvSvcLocCode { get; set; }
-
         //R-1 :
         public string DhhsSpAmhTierInfoGroup5x { get; set; } // Len: 105 ; start: 1484
 

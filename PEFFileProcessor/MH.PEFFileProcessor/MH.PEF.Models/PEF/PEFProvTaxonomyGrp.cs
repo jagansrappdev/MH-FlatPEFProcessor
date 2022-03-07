@@ -21,10 +21,6 @@ namespace MH.PEF.Models.PEF
         public string ProvSvcLocCode { get; set; }
         // -- Unique key combination   -- END  
 
-        // #4. REPEATS-4 ; Refer: Provider Taxonomy Group (20x) : 2060-len (1589 to 3648)
-
-      //  public string ProvTaxonomyGroup20x { get; set; }
-
         [StringLength(10)]
         public string TaxonomyCode { get; set; }
         [StringLength(10)]

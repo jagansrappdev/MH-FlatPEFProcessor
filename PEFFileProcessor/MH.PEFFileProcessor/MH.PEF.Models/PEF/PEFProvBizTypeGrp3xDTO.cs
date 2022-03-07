@@ -21,7 +21,6 @@ namespace MH.PEF.Models.PEF
         public string ProvSvcLocCode { get; set; }
         // -- Unique key combination   -- END  
 
-
         [StringLength(1)]
         public string ProvBizTypeCode { get; set; }
         [StringLength(10)]
@@ -29,4 +28,14 @@ namespace MH.PEF.Models.PEF
         [StringLength(10)]
         public string ProvBizTypeEndDt { get; set; }
     }
+
+
+    public class ProvBizType
+    {
+        public string ProvBizTypeCode { get; set; }
+        public string ProvBizTypeBeginDt { get; set; }
+        public string ProvBizTypeEndDt { get; set; }
+    }
+
+
 }

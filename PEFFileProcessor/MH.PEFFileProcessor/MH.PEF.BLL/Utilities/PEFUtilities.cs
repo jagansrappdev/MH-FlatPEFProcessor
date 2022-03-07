@@ -185,7 +185,16 @@ namespace MH.PEF.BLL.Utilities
 
                     db.CreateTableIfNotExists<PEFMasterDTO>();
                     // Repeat groups
+
+                    db.CreateTableIfNotExists<PEFDhhsAMhTierInfoGrp5xDTO>();
+                    //
                     db.CreateTableIfNotExists<PEFProvTaxonomyGrp>();
+                    //
+                    db.CreateTableIfNotExists<PEFProvBizTypeGrp3xDTO>();
+                    //
+                    db.CreateTableIfNotExists<PEFProvAffilGroupDTO>();
+                    //
+                    db.CreateTableIfNotExists<PEFSvcCountiesGrp100xDTO>();
 
                     //Create a table with a specific  d/b Schema 
                     //  db.CreateSchema("Schema");
