@@ -310,7 +310,7 @@ namespace MH.PEF.BLL
                    // db.CreateTableIfNotExists<PEFRespModel>();
                     
                     db.CreateTableIfNotExists<PEFMasterDTO>();
-                    db.CreateTableIfNotExists<PEFVendorDTO>();
+                 //   db.CreateTableIfNotExists<PEFVendorDTO>();
 
                     //Create a table with a specific  d/b Schema 
                     //  db.CreateSchema("Schema");

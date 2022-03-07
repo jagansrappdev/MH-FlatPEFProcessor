@@ -20,6 +20,7 @@ namespace MH.PEFFileProcessor
 {
     public partial class Form1 : Form
     {
+        // declarations 
         public string PEFFilePath = @"C:\InputFiles\PEF-01.txt";
         public string PEFFullFilePath = @"C:\InputFiles\PEFfullFile.txt";
         public string PEFOutputFilespath = @"C:\Outputfiles";
@@ -33,10 +34,6 @@ namespace MH.PEFFileProcessor
             InitializeComponent();
         }
 
-        //private void label1_Click(object sender, EventArgs e)
-        //{
-
-        //}
 
         #region Button Events 
         private void btnProcessPEFtoDB_Click(object sender, EventArgs e)
@@ -102,7 +99,9 @@ namespace MH.PEFFileProcessor
 
         private void btnSplitFile_Click(object sender, EventArgs e)
         {
-            var FilesCount = GetFileCount(PEFOutputFilespath);
+            var PEFOpFilespath = @"C:\New20kOutputFiles";
+         //   var PEFOpFilespath = @"C:\PEFRepeatSplitFiles";
+            var FilesCount = GetFileCount(PEFOpFilespath);
             if (FilesCount > 0)
             {
                 Display("Files Exist already !! Please clean the folder !!!!");
@@ -110,12 +109,15 @@ namespace MH.PEFFileProcessor
             else
             {
                 var reader = File.OpenText(PEFFullFilePath);
-                string outFileName = @"C:\Outputfiles\PEFfile{0}.txt";
+                //  string outFileName = @"C:\Outputfiles\PEFfile{0}.txt";
+                //  string outFileName = @"C:\PEFRepeatSplitFiles\PEFfile{0}.txt";
+                string outFilesPathWithName = @"C:\New20kOutputFiles\PEFfile{0}.txt";
                 int outFileNumber = 1;
-                const int MAX_LINES = 33119;
+                const int MAX_LINES = 20000;
+                // const int MAX_LINES = 33119;
                 while (!reader.EndOfStream)
                 {
-                    var writer = File.CreateText(string.Format(outFileName, outFileNumber++));
+                    var writer = File.CreateText(string.Format(outFilesPathWithName, outFileNumber++));
                     for (int idx = 0; idx < MAX_LINES; idx++)
                     {
                         writer.WriteLine(reader.ReadLine());
@@ -125,8 +127,11 @@ namespace MH.PEFFileProcessor
                 }
 
                 reader.Close();
+
+
                 // confirm the spliting and show message 
-                var splitCount = GetFileCount(PEFOutputFilespath);
+                var SplittedFilespath = @"C:\New20kOutputFiles";
+                var splitCount = GetFileCount(SplittedFilespath);
                 if (splitCount > 1)
                 {
                     Display("File Split Success! " + "\n" + "Total Files : " + splitCount);
@@ -134,6 +139,206 @@ namespace MH.PEFFileProcessor
             }
         }
 
+        private void btnCreateDbTbl_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Pass table Names  
+                //  ProcessPEFData.CreateSqlTblforPEF( );
+                //#1
+                PEFUtilities.CreateSqlTblforPEFFile();
+                // #2
+                //   PEFUtilities.CreateSqlTblforPEFRepeatGroups();
+
+                //Print msg
+                Display("!Table Creation completed ! " + "\n");
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+
+
+        }
+
+        private void btn1SplitPEfFileProcess_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                var respObj = new List<PEFMasterDTO>();
+                // vendor table 
+                //   var respVendorObj = new List<PEFVendorDTO>();
+                // 
+                //     int MhTrnxId = 0;
+
+
+
+                //Read all files  
+                // var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(PEFOutputFilespath);
+                // var totals = pefAllSplitFilespath.Count();
+
+
+                // foreach (var sp in pefAllSplitFilespath)
+                //  {
+                // var sp = pefAllSplitFilespath.ElementAt(2);
+
+                // Read single file 
+                var PEFOutputFilePath = @"C:\Outputfiles\PEFfile21.txt";
+
+
+                foreach (string line in File.ReadLines(PEFOutputFilePath))
+                {
+                    // read single line 
+                    var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
+                    respObj.Add(item);
+                }
+
+                // Insert to databse 
+                if (respObj.Any())
+                {
+                    var dt = PEFUtilities.ToDataTable(respObj);
+                    //Export to csv 
+                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                    PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
+                }
+
+                //Set vendor table 
+                //if (respObj.Any())
+                //{
+                //    // filter criteria for vendor table 
+                //    var filteredAffilGroup = respObj.Where(x => x.AffilOrgGroup10x != null 
+                //                                                && ( x.ProvEnrollmentType == "2" || x.ProvEnrollmentType == "4" )).ToList();
+                //    foreach (var item in filteredAffilGroup)
+                //    {
+                //        // Set Vendor Tbl data : only whne EnrollType == 2 Or 4
+                //        if (item.ProvEnrollmentType == "2" || item.ProvEnrollmentType == "4")
+                //        {
+                //            if (!string.IsNullOrEmpty(item.AffilOrgGroup10x))
+                //            {
+                //                var vendoritems = PEFProcessorLogic.ProcessPEFVendorDTO(item, MhTrnxId);
+                //                respVendorObj.AddRange(vendoritems);
+                //                //increment counter 
+                //                MhTrnxId++;
+                //            }
+
+                //        }
+                //    }
+                //}
+
+
+                //    }
+                Display("DB Operation Completed  " + "\n");
+
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+
+        }
+
+        private void btn_Process_repeatgrp_Click(object sender, EventArgs e)
+        {
+            var respObj = new List<PEFProvTaxonomyGrp>();
+            var parsedLineObj = new List<ProvTaxonomyLineDTO>();
+
+            var TaxonomyChunkSizeTax = 163;
+
+            try
+            {
+                // 1 
+                RunProvTaxonomy20xProcess(TaxonomyChunkSizeTax);
+
+                Display("PEF Taxonly Group Insertion Completed  " + "\n");
+
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+
+        }
+
+        private static void RunProvTaxonomy20xProcess(int TaxonomyChunkSizeTax)
+        {
+            //  var PEFOutputFilePath = @"C:\Outputfiles\PEFfile1.txt";
+            var PEFOutputFilePath = @"C:\PEFRepeatSplitFiles\PEFfile1.txt";
+            //
+            foreach (string line in File.ReadLines(PEFOutputFilePath))
+            {
+                // read single line 
+                var item = PEFProcessorLogic.ProcessPEFTaxonomyLine(line);
+                // parsedLineObj.Add(item);
+
+                //Check Taxonmy details exist 
+                if (item.ProvTaxonomyGroup20x != null)
+                {
+                    // Get List of Prov-Taxonmy group lines 
+                    var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(item, TaxonomyChunkSizeTax);
+                    // insert to d/b
+                    if (pefTxnmyResp != null)
+                    {
+                        var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
+                        PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
+                    }
+                }
+
+            }
+        }
+
+
+        // Process ALL PEF Files(spiltted )
+
+        private void btnProcessAllfiles_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var InputSplitFiles = @"C:\New20kOutputFiles";
+                var respObj = new List<PEFMasterDTO>();
+              
+                //Read all files  
+                var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(InputSplitFiles);
+                //Read file-by file 
+                foreach(var fItem in pefAllSplitFilespath)
+                {
+                    // Read a file data 
+                    foreach (string line in File.ReadLines(fItem))
+                    {
+                        // read single line 
+                        var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
+                        if (item != null)
+                        {
+                           // var dt = PEFUtilities.ToDataTable(item);
+                            var dt = PEFUtilities.ClassToDataTable(item);
+                          
+                            PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
+                        }
+                          //  respObj.Add(item);
+                    }
+
+                }
+
+                // Insert to databse 
+                if (respObj.Any())
+                {
+                    var dt = PEFUtilities.ToDataTable(respObj);
+                    //Export to csv 
+                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
+                    PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
+                // throw ex;
+            }
+        }
 
         #endregion
 
@@ -306,29 +511,6 @@ namespace MH.PEFFileProcessor
 
         #endregion
 
-        private void btnCreateDbTbl_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // Pass table Names  
-                //  ProcessPEFData.CreateSqlTblforPEF( );
-                //#1
-                // PEFUtilities.CreateSqlTblforPEFFile();
-                // #2
-                PEFUtilities.CreateSqlTblforPEFRepeatGroups();
-
-                //Print msg
-                Display("!Table Creation completed ! " + "\n" );
-            }
-            catch (Exception ex)
-            {
-                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
-                // throw ex;
-            }
-           
-            
-        }
-
 
 
         #region REPEAT- Logic 
@@ -438,78 +620,6 @@ namespace MH.PEFFileProcessor
 
         #region Process ALL PEF Files(spiltted ) 
 
-        private void btnProcessAllfiles_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var respObj = new List<PEFMasterDTO>();
-                // vendor table 
-                var respVendorObj = new List<PEFVendorDTO>();
-                // 
-                int MhTrnxId = 0;
-
-                //start the stopwatch for "for" loop
-                //   var sw = Stopwatch.StartNew();
-
-                //Read all files  
-                // var pefAllSplitFilespath = GetAllFilesFromDir(PEFOutputFilespath);
-                var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(PEFOutputFilespath);
-                // parallel 
-                Parallel.ForEach(pefAllSplitFilespath, splitFile =>
-                {
-
-                    // Read File 
-                    foreach (string line in File.ReadLines(splitFile))
-                    {
-                        // single line processing logic
-                        var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
-                        // add to tbl 
-                        respObj.Add(item);
-
-                    }
-
-                    //Errors: Collection was modified; enumeration operation may not execute
-                    ////Set vendor table 
-                    //if (respObj.Any())
-                    //{
-                    //    foreach(var item in respObj.ToList())
-                    //    {
-                    //        // Set Vendor Tbl data : only whne EnrollType == 2 Or 4
-                    //        if (item.ProvEnrollmentType == "2" || item.ProvEnrollmentType == "4")
-                    //        {
-                    //           if( !string.IsNullOrEmpty(item.AffilOrgGroup10x) )
-                    //             {
-                    //            var vendoritems = PEFProcessorLogic.ProcessPEFVendorDTO(item, MhTrnxId);
-                    //            respVendorObj.AddRange(vendoritems);
-                    //            //increment counter 
-                    //            MhTrnxId++;
-                    //              }
-
-                    //        }
-                    //    }
-                    //}
-                });
-
-                // Insert to databse 
-                if (respObj.Any())
-                {
-                    var dt = PEFUtilities.ToDataTable(respObj);
-                    //Export to csv 
-                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
-                    PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
-
-                }
-
-                //start the stopwatch for "Parallel.ForEach"
-                // var timeEmplased = sw.Elapsed.TotalSeconds;
-            }
-            catch (Exception ex)
-            {
-                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
-                // throw ex;
-            }
-
-        }
 
         //#1. Process new PEF Model / each line 
         public PEFMasterDTO ReadPEFMasterLine(string Line)
@@ -527,135 +637,14 @@ namespace MH.PEFFileProcessor
             }
         }
 
+
         // #2. 
 
 
         #endregion
 
-        private void btn1SplitPEfFileProcess_Click(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-
-            try
-            {
-                var respObj = new List<PEFMasterDTO>();
-                // vendor table 
-                //   var respVendorObj = new List<PEFVendorDTO>();
-                // 
-                //     int MhTrnxId = 0;
-
-
-
-                //Read all files  
-                // var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(PEFOutputFilespath);
-                // var totals = pefAllSplitFilespath.Count();
-
-
-                // foreach (var sp in pefAllSplitFilespath)
-                //  {
-                // var sp = pefAllSplitFilespath.ElementAt(2);
-              
-                // Read single file 
-                var PEFOutputFilePath = @"C:\Outputfiles\PEFfile21.txt";
-
-
-                foreach (string line in File.ReadLines(PEFOutputFilePath))
-                {
-                    // read single line 
-                    var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
-                    respObj.Add(item);
-                }
-
-                // Insert to databse 
-                if (respObj.Any())
-                {
-                    var dt = PEFUtilities.ToDataTable(respObj);
-                    //Export to csv 
-                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
-                    PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
-                }
-
-                //Set vendor table 
-                //if (respObj.Any())
-                //{
-                //    // filter criteria for vendor table 
-                //    var filteredAffilGroup = respObj.Where(x => x.AffilOrgGroup10x != null 
-                //                                                && ( x.ProvEnrollmentType == "2" || x.ProvEnrollmentType == "4" )).ToList();
-                //    foreach (var item in filteredAffilGroup)
-                //    {
-                //        // Set Vendor Tbl data : only whne EnrollType == 2 Or 4
-                //        if (item.ProvEnrollmentType == "2" || item.ProvEnrollmentType == "4")
-                //        {
-                //            if (!string.IsNullOrEmpty(item.AffilOrgGroup10x))
-                //            {
-                //                var vendoritems = PEFProcessorLogic.ProcessPEFVendorDTO(item, MhTrnxId);
-                //                respVendorObj.AddRange(vendoritems);
-                //                //increment counter 
-                //                MhTrnxId++;
-                //            }
-
-                //        }
-                //    }
-                //}
-
-
-                //    }
-                Display("DB Operation Completed  " + "\n"  );
-
-            }
-            catch (Exception ex)
-            {
-                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
-                // throw ex;
-            }
-
-        }
-
-        private void btn_Process_repeatgrp_Click(object sender, EventArgs e)
-        {
-            var respObj = new List<PEFProvTaxonomyGrp>();
-            var parsedLineObj = new List<ProvTaxonomyLineDTO>();
-
-            var TaxonomyChunkSizeTax = 163;
-
-            try
-            {
-                var PEFOutputFilePath = @"C:\Outputfiles\PEFfile1.txt";
-
-
-                foreach (string line in File.ReadLines(PEFOutputFilePath))
-                {
-                    // read single line 
-                    var item = PEFProcessorLogic.ProcessPEFTaxonomyLine(line);
-                    parsedLineObj.Add(item);
-                }
-
-                // Prep Taxonomy table 
-                if (parsedLineObj.Any())
-                {
-
-                    var filteredObj = parsedLineObj.Where(x => x.ProvTaxonomyGroup20x != null).ToList();
-                    // 
-                    var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTO(filteredObj, TaxonomyChunkSizeTax);
-
-                   
-                }
-
-                // Insert to databse 
-                if (respObj.Any())
-                {
-                  //  var dt = PEFUtilities.ToDataTable(respObj);
-                    //Export to csv 
-                    //  MyDataTableExtensions.WriteToCsvFile(dt , csvfilePath);
-                 //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                Display("!error in ProcessALLPEFfiles:! " + "\n" + ex.ToString());
-                // throw ex;
-            }
 
         }
     }

@@ -73,19 +73,19 @@ namespace MH.PEFFileProcessor
             // 
             this.btnSplitFile.Location = new System.Drawing.Point(567, 65);
             this.btnSplitFile.Name = "btnSplitFile";
-            this.btnSplitFile.Size = new System.Drawing.Size(105, 74);
+            this.btnSplitFile.Size = new System.Drawing.Size(122, 60);
             this.btnSplitFile.TabIndex = 3;
-            this.btnSplitFile.Text = "Split File";
+            this.btnSplitFile.Text = "1-Split into 20k Sub-Files";
             this.btnSplitFile.UseVisualStyleBackColor = true;
             this.btnSplitFile.Click += new System.EventHandler(this.btnSplitFile_Click);
             // 
             // btnProcessAllfiles
             // 
-            this.btnProcessAllfiles.Location = new System.Drawing.Point(149, 12);
+            this.btnProcessAllfiles.Location = new System.Drawing.Point(564, 240);
             this.btnProcessAllfiles.Name = "btnProcessAllfiles";
-            this.btnProcessAllfiles.Size = new System.Drawing.Size(139, 73);
+            this.btnProcessAllfiles.Size = new System.Drawing.Size(125, 61);
             this.btnProcessAllfiles.TabIndex = 4;
-            this.btnProcessAllfiles.Text = "Process All Files";
+            this.btnProcessAllfiles.Text = "3-Process  All SplitsPEF into DB";
             this.btnProcessAllfiles.UseVisualStyleBackColor = true;
             this.btnProcessAllfiles.Click += new System.EventHandler(this.btnProcessAllfiles_Click);
             // 
@@ -93,9 +93,9 @@ namespace MH.PEFFileProcessor
             // 
             this.btnCreateDbTbl.Location = new System.Drawing.Point(564, 155);
             this.btnCreateDbTbl.Name = "btnCreateDbTbl";
-            this.btnCreateDbTbl.Size = new System.Drawing.Size(108, 66);
+            this.btnCreateDbTbl.Size = new System.Drawing.Size(125, 67);
             this.btnCreateDbTbl.TabIndex = 5;
-            this.btnCreateDbTbl.Text = "Create d/b tbl from ORMLite";
+            this.btnCreateDbTbl.Text = "2-Create Tbls: PEF-master & Rpt-Grp tbls";
             this.btnCreateDbTbl.UseVisualStyleBackColor = true;
             this.btnCreateDbTbl.Click += new System.EventHandler(this.btnCreateDbTbl_Click);
             // 
@@ -111,11 +111,11 @@ namespace MH.PEFFileProcessor
             // 
             // btn_Process_repeatgrp
             // 
-            this.btn_Process_repeatgrp.Location = new System.Drawing.Point(318, 109);
+            this.btn_Process_repeatgrp.Location = new System.Drawing.Point(564, 330);
             this.btn_Process_repeatgrp.Name = "btn_Process_repeatgrp";
-            this.btn_Process_repeatgrp.Size = new System.Drawing.Size(135, 66);
+            this.btn_Process_repeatgrp.Size = new System.Drawing.Size(125, 58);
             this.btn_Process_repeatgrp.TabIndex = 7;
-            this.btn_Process_repeatgrp.Text = "Prcoess Repeat Group 1-file";
+            this.btn_Process_repeatgrp.Text = "4-Process Repeat-Group 1by1";
             this.btn_Process_repeatgrp.UseVisualStyleBackColor = true;
             this.btn_Process_repeatgrp.Click += new System.EventHandler(this.btn_Process_repeatgrp_Click);
             // 
@@ -123,7 +123,7 @@ namespace MH.PEFFileProcessor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(684, 689);
+            this.ClientSize = new System.Drawing.Size(994, 689);
             this.Controls.Add(this.btn_Process_repeatgrp);
             this.Controls.Add(this.btn1SplitPEfFileProcess);
             this.Controls.Add(this.btnCreateDbTbl);
@@ -134,6 +134,7 @@ namespace MH.PEFFileProcessor
             this.Controls.Add(this.btnCountLines);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }

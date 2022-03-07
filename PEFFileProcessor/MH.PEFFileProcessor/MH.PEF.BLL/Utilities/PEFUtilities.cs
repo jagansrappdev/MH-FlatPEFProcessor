@@ -18,6 +18,7 @@ namespace MH.PEF.BLL.Utilities
     {
 
         private static readonly string _MHdbConnStr;
+        private static readonly string _MHPEFdbConnStr;
 
         static PEFUtilities()
         {
@@ -25,8 +26,9 @@ namespace MH.PEF.BLL.Utilities
             /* // For Async : 
               SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["JaganLocalDB"].ConnectionString){ AsynchronousProcessing = true}.ToString()
              */
+            _MHPEFdbConnStr = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["MHPEFDBLocal"].ConnectionString).ToString();
         }
-         
+
         public static string GetStringValue(string lineData, int startPos, int length, string fieldName)
         {
             var splitString = lineData.Substring(startPos - 1, length);
@@ -106,37 +108,62 @@ namespace MH.PEF.BLL.Utilities
             return table;
         }
 
+
+        //Class to DT
+        public static DataTable ClassToDataTable<T>(T InputList)
+        {
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
+
+            DataTable table = new DataTable();
+
+            foreach (PropertyDescriptor prop in properties)
+                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+
+          //  foreach (var item in InputList)
+          //  {
+                DataRow row = table.NewRow();
+                foreach (PropertyDescriptor prop in properties)
+                    row[prop.Name] = prop.GetValue(InputList) ?? DBNull.Value;
+
+                table.Rows.Add(row);
+          //  }
+            return table;
+        }
+
+
+
+
         //
-        public static void PerformDBInsertion(DataTable InputTbl , string DbTblname)
+        public static void PerformDBInsertion(DataTable InputTbl, string DbTblname)
         {
             try
             {
 
-           
-            using (var connection = new SqlConnection(_MHdbConnStr))
-            {
-                connection.Open();
-                SqlTransaction transaction = connection.BeginTransaction();
-
-                using (var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction))
+                // using (var connection = new SqlConnection(_MHdbConnStr))
+                using (var connection = new SqlConnection(_MHPEFdbConnStr))
                 {
-                    bulkCopy.BatchSize = 100;
-                    bulkCopy.DestinationTableName = DbTblname;
-                        //"dbo.PEFRespModel2";
-                    try
-                    {
-                        bulkCopy.WriteToServer(InputTbl);
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        connection.Close();
-                    }
-                }
+                    connection.Open();
+                    SqlTransaction transaction = connection.BeginTransaction();
 
-                transaction.Commit();
+                    using (var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction))
+                    {
+                        bulkCopy.BatchSize = 100;
+                        bulkCopy.DestinationTableName = DbTblname;
+                        //"dbo.PEFRespModel2";
+                        try
+                        {
+                            bulkCopy.WriteToServer(InputTbl);
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            connection.Close();
+                        }
+                    }
+
+                    transaction.Commit();
+                }
             }
-          }
             catch (Exception ex)
             {
                 throw ex;
@@ -148,7 +175,8 @@ namespace MH.PEF.BLL.Utilities
         {
             try
             {
-                var dbFactory = new OrmLiteConnectionFactory(_MHdbConnStr, SqlServerDialect.Provider);
+                // var dbFactory = new OrmLiteConnectionFactory(_MHdbConnStr, SqlServerDialect.Provider);
+                var dbFactory = new OrmLiteConnectionFactory(_MHPEFdbConnStr, SqlServerDialect.Provider);
 
                 using (var db = dbFactory.Open())
                 {
@@ -156,7 +184,8 @@ namespace MH.PEF.BLL.Utilities
                     // db.CreateTableIfNotExists<PEFRespModel>();
 
                     db.CreateTableIfNotExists<PEFMasterDTO>();
-                    db.CreateTableIfNotExists<PEFVendorDTO>();
+                    // Repeat groups
+                    db.CreateTableIfNotExists<PEFProvTaxonomyGrp>();
 
                     //Create a table with a specific  d/b Schema 
                     //  db.CreateSchema("Schema");

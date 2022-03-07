@@ -189,67 +189,67 @@ namespace MH.PEF.BLL.BizLogic
             return resp;
         }
 
-        public static List<PEFVendorDTO> ProcessPEFVendorDTO(PEFMasterDTO parsedIpObj , int MhTrnxId )
-        {
-            try
-            {
-                var res = new List<PEFVendorDTO>();
-                //
-                var AffilGroupList = new List<string>();
+        //public static List<PEFVendorDTO> ProcessPEFVendorDTO(PEFMasterDTO parsedIpObj , int MhTrnxId )
+        //{
+        //    try
+        //    {
+        //        var res = new List<PEFVendorDTO>();
+        //        //
+        //        var AffilGroupList = new List<string>();
 
-                //parse common values 
-                var npi = parsedIpObj.ProvNPI;
-                var ncId = parsedIpObj.ProvIdofNCTracks;
-                var enroll = parsedIpObj.ProvEnrollmentType;
-                var provTax = parsedIpObj.ProvTaxId;
+        //        //parse common values 
+        //        var npi = parsedIpObj.ProvNPI;
+        //        var ncId = parsedIpObj.ProvIdofNCTracks;
+        //        var enroll = parsedIpObj.ProvEnrollmentType;
+        //        var provTax = parsedIpObj.ProvTaxId;
 
-                var RepeatString = parsedIpObj.AffilOrgGroup10x;
-                if( !string.IsNullOrEmpty( RepeatString ))
-                {
-                    int chunkSize = 135;
-                    int rptStringLen = RepeatString.Length;
+        //        var RepeatString = parsedIpObj.AffilOrgGroup10x;
+        //        if( !string.IsNullOrEmpty( RepeatString ))
+        //        {
+        //            int chunkSize = 135;
+        //            int rptStringLen = RepeatString.Length;
 
-                    for (int i = 1; i <= 10; i++)
-                    {
-                        var startPos = chunkSize * i;
-                        var splitStr = PEFUtilities.GetStringValue(RepeatString, startPos, chunkSize, "AffilGroup-" + i);
+        //            for (int i = 1; i <= 10; i++)
+        //            {
+        //                var startPos = chunkSize * i;
+        //                var splitStr = PEFUtilities.GetStringValue(RepeatString, startPos, chunkSize, "AffilGroup-" + i);
 
-                        AffilGroupList.Add(splitStr);
-                    }
+        //                AffilGroupList.Add(splitStr);
+        //            }
 
-                    foreach (var item in AffilGroupList)
-                    {
-                        var respItem = new PEFVendorDTO
-                        {
-                            ProvNPI = npi,
-                            ProvNCTracksId = ncId,
-                            ProvEnrollmentType = enroll,
-                            ProvTaxId = provTax,
-                            MhTrnxId = MhTrnxId,
-                            //
-                            AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(item, 1, 2, "Affiliated Organization Type Code"),
-                            AffilOrgNPI = ProcessPEFData.GetStringFieldValue(item, 2, 10, "Affiliated Organization NPI/Atypical"),
-                            AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(item, 12, 50, "Affiliated Organization Tax Id"),
-                            AffilOrgName = ProcessPEFData.GetStringFieldValue(item, 62, 50, "Affiliated Organization Name"),
-                            AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(item, 112, 3, "Affiliated Organization Service Location Code"),
-                            AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(item, 115, 10, "Affiliated Organization Begin Date"),
-                            AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(item, 125, 10, "Affiliated Organization End Date")
-                        };
-                        res.Add(respItem);
+        //            foreach (var item in AffilGroupList)
+        //            {
+        //                var respItem = new PEFVendorDTO
+        //                {
+        //                    ProvNPI = npi,
+        //                    ProvNCTracksId = ncId,
+        //                    ProvEnrollmentType = enroll,
+        //                    ProvTaxId = provTax,
+        //                    MhTrnxId = MhTrnxId,
+        //                    //
+        //                    AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(item, 1, 2, "Affiliated Organization Type Code"),
+        //                    AffilOrgNPI = ProcessPEFData.GetStringFieldValue(item, 2, 10, "Affiliated Organization NPI/Atypical"),
+        //                    AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(item, 12, 50, "Affiliated Organization Tax Id"),
+        //                    AffilOrgName = ProcessPEFData.GetStringFieldValue(item, 62, 50, "Affiliated Organization Name"),
+        //                    AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(item, 112, 3, "Affiliated Organization Service Location Code"),
+        //                    AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(item, 115, 10, "Affiliated Organization Begin Date"),
+        //                    AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(item, 125, 10, "Affiliated Organization End Date")
+        //                };
+        //                res.Add(respItem);
 
-                    }
+        //            }
 
-                }
+        //        }
 
-                return res;
+        //        return res;
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
            
-        }
+        //}
 
 
         public static ProvTaxonomyLineDTO ProcessPEFTaxonomyLine(string InputLine)
@@ -294,7 +294,7 @@ namespace MH.PEF.BLL.BizLogic
             return res;
         }
 
-
+        //org
         public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTO(List<ProvTaxonomyLineDTO> parsedInpObj, int MhTrnxId)
         {
 
@@ -338,7 +338,7 @@ namespace MH.PEF.BLL.BizLogic
                                 ProvNCTracksId = item.ProvNCTracksId,
                                 ProvEnrollmentType = item.ProvEnrollmentType,
                                 ProvSvcLocCode = item.ProvSvcLocCode,
-                                ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
+                             //   ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
                                 // repeat lines 
                                 TaxonomyCode = txnLine.TaxonomyCode,
                                 TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
@@ -459,7 +459,86 @@ namespace MH.PEF.BLL.BizLogic
 
         }
 
+        //new 
+        public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTOItem(ProvTaxonomyLineDTO parsedInpObj, int MhTrnxId)
+        {
 
-        
+            try
+            {
+                var res = new List<PEFProvTaxonomyGrp>();
+                //
+                var txnGrpList = new List<string>();
+
+                //Read input
+                if (parsedInpObj != null)
+                {
+                        // Break into List<Strings> 
+                        var RepeatString = parsedInpObj.ProvTaxonomyGroup20x;
+                        int chunkSize = 103;
+                        var startpos = 1;
+                        // repeats 20 times 
+                        for (int i = 1; i <= 20; i++)
+                        {
+                            var splitStr = PEFUtilities.GetStringValue(RepeatString, startpos, 103, "txnGrpList-" + i);
+                            txnGrpList.Add(splitStr);
+                            // reset start 
+                            startpos = startpos + chunkSize;
+                        }
+
+                        //remove null lines 
+                        txnGrpList?.RemoveAll(x => x == null);
+
+                        // Loop Group Lines 
+                        foreach (var str in txnGrpList)
+                        {
+                            var txnLine = ProcessTaxonomyLine(str);
+
+                            var line = new PEFProvTaxonomyGrp
+                            {
+                                ProvNPI = parsedInpObj.ProvNPI,
+                                ProvNCTracksId = parsedInpObj.ProvNCTracksId,
+                                ProvEnrollmentType = parsedInpObj.ProvEnrollmentType,
+                                ProvSvcLocCode = parsedInpObj.ProvSvcLocCode,
+                                //   ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
+                                // repeat lines 
+                                TaxonomyCode = txnLine.TaxonomyCode,
+                                TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
+                                TaxonomyLvl3Code = txnLine.TaxonomyLvl3Code,
+                                //
+                                TaxonomyCodeStatusCurrent = txnLine.TaxonomyCodeStatusCurrent,
+                                TaxonomyCodeEffDateCurrent = txnLine.TaxonomyCodeEffDateCurrent,
+                                TaxonomyCodeEndDateCurrent = txnLine.TaxonomyCodeEndDateCurrent,
+                                //
+                                TaxonomyCodeStatusPrev01 = txnLine.TaxonomyCodeStatusPrev01,
+                                TaxonomyCodeEffDatePrev01 = txnLine.TaxonomyCodeEffDatePrev01,
+                                TaxonomyCodeEndDatePrev01 = txnLine.TaxonomyCodeEndDatePrev01,
+                                //
+                                TaxonomyCodeStatusPrev02 = txnLine.TaxonomyCodeStatusPrev02,
+                                TaxonomyCodeEffDatePrev02 = txnLine.TaxonomyCodeEffDatePrev02,
+                                TaxonomyCodeEndDatePrev02 = txnLine.TaxonomyCodeEndDatePrev02,
+                                TaxonomyCodeRetroTrigger = txnLine.TaxonomyCodeRetroTrigger
+                            };
+                            //add to resp obj
+                            res.Add(line);
+
+                        }
+
+                  //  }
+                    //final obj
+                    var final = res;
+
+                }
+
+                return res;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+
     }
 }
