@@ -189,67 +189,129 @@ namespace MH.PEF.BLL.BizLogic
             return resp;
         }
 
-        //public static List<PEFVendorDTO> ProcessPEFVendorDTO(PEFMasterDTO parsedIpObj , int MhTrnxId )
-        //{
-        //    try
-        //    {
-        //        var res = new List<PEFVendorDTO>();
-        //        //
-        //        var AffilGroupList = new List<string>();
+        //# process repeat-grp line 
+        public static PEFProvRepeatGroups ParsePefRepeatline(string IpLine)
+        {
+            var resp = new PEFProvRepeatGroups();
 
-        //        //parse common values 
-        //        var npi = parsedIpObj.ProvNPI;
-        //        var ncId = parsedIpObj.ProvIdofNCTracks;
-        //        var enroll = parsedIpObj.ProvEnrollmentType;
-        //        var provTax = parsedIpObj.ProvTaxId;
+            /*  -------Perform string operations based on field length ------------- */
+            resp.ProvNPI = PEFUtilities.GetStringValue(IpLine, 1, 10, "Provider NPI");
+            resp.ProvNCTracksId = PEFUtilities.GetStringValue(IpLine, 11, 8, "NCTracks Internal Provider Identifier");
+            resp.ProvEnrollmentType = PEFUtilities.GetStringValue(IpLine, 19, 1, "Provider Enrollment Type");
+            resp.ProvSvcLocCode = PEFUtilities.GetStringValue(IpLine, 1276, 3, "Service Location Code key");
+            // Repeat Groups
+            resp.DhhsSpAmhTierInfoGroup5x = PEFUtilities.GetStringValueNOTrim(IpLine, 1484, 105, "DHHS SP AMH Tier Information Group (5x)");
+            resp.ProvTaxonomyGroup20x = PEFUtilities.GetStringValueNOTrim(IpLine, 1589, 2060, "Provider Taxonomy Group (20x)");
+            resp.ProvBizTypeGroup3x = PEFUtilities.GetStringValue(IpLine, 3730, 63, "Provider Business Type Group (3x)");
+            resp.AffilOrgGroup10x = PEFUtilities.GetStringValueNOTrim(IpLine, 3833, 1350, "Affiliation Organization Group (10x)");
+            resp.SvcCountiesGroup100x = PEFUtilities.GetStringValueNOTrim(IpLine, 5402, 2300, "Servicing Counties Group (100x)");
+            //
+            return resp;
+        }
 
-        //        var RepeatString = parsedIpObj.AffilOrgGroup10x;
-        //        if( !string.IsNullOrEmpty( RepeatString ))
-        //        {
-        //            int chunkSize = 135;
-        //            int rptStringLen = RepeatString.Length;
+        //# process Dhhs Sp AMH 
+        public static List<PEFDhhsAMhTierInfoGrp5xDTO> GetDhhsSpAmhRptItem(PEFProvRepeatGroups Ip , int DhhsChunkSize , int rptTimes )
+        {
+            try
+            {
+                var resp = new List<PEFDhhsAMhTierInfoGrp5xDTO>();
+                var txnGrpList = new List<string>();
 
-        //            for (int i = 1; i <= 10; i++)
-        //            {
-        //                var startPos = chunkSize * i;
-        //                var splitStr = PEFUtilities.GetStringValue(RepeatString, startPos, chunkSize, "AffilGroup-" + i);
+                if( Ip != null)
+                {
+                    // Break into List<Strings> 
+                    var RepeatString = Ip.DhhsSpAmhTierInfoGroup5x;
+                    //stays constant -> in thiscase: 21 
+                    int chunkSize = DhhsChunkSize;
+                    var startpos = 1;
+                    // repeats 20 times 
+                    for (int i = 1; i <= rptTimes; i++)
+                    {
+                        var splitStr = PEFUtilities.GetStringValue(RepeatString, startpos, chunkSize, "DhhsSPRptGrp-" + i);
+                        txnGrpList.Add(splitStr);
+                        // reset start 
+                        startpos = startpos + chunkSize;
+                    }
 
-        //                AffilGroupList.Add(splitStr);
-        //            }
+                    //remove null lines 
+                    txnGrpList?.RemoveAll(x => x == null);
 
-        //            foreach (var item in AffilGroupList)
-        //            {
-        //                var respItem = new PEFVendorDTO
-        //                {
-        //                    ProvNPI = npi,
-        //                    ProvNCTracksId = ncId,
-        //                    ProvEnrollmentType = enroll,
-        //                    ProvTaxId = provTax,
-        //                    MhTrnxId = MhTrnxId,
-        //                    //
-        //                    AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(item, 1, 2, "Affiliated Organization Type Code"),
-        //                    AffilOrgNPI = ProcessPEFData.GetStringFieldValue(item, 2, 10, "Affiliated Organization NPI/Atypical"),
-        //                    AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(item, 12, 50, "Affiliated Organization Tax Id"),
-        //                    AffilOrgName = ProcessPEFData.GetStringFieldValue(item, 62, 50, "Affiliated Organization Name"),
-        //                    AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(item, 112, 3, "Affiliated Organization Service Location Code"),
-        //                    AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(item, 115, 10, "Affiliated Organization Begin Date"),
-        //                    AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(item, 125, 10, "Affiliated Organization End Date")
-        //                };
-        //                res.Add(respItem);
 
-        //            }
+                    // Loop Group Lines 
+                    foreach (var str in txnGrpList)
+                    {
+                        var txnLine = ParseDhhsSPSingleItem(str);     
+                        if(txnLine != null )
+                        {
+                            var line = new PEFDhhsAMhTierInfoGrp5xDTO
+                            {
+                                ProvNPI = Ip.ProvNPI,
+                                ProvNCTracksId = Ip.ProvNCTracksId,
+                                ProvEnrollmentType = Ip.ProvEnrollmentType,
+                                ProvSvcLocCode = Ip.ProvSvcLocCode,
+                                // rpt lines 
+                                DHHSSpAMHTierTypeCode = txnLine.DHHSSpAMHTierTypeCode,
+                                DHHSSpAMHTierEffectiveDt = txnLine.DHHSSpAMHTierEffectiveDt,
+                                DHHSSpAMHTierEndDt = txnLine.DHHSSpAMHTierEndDt
+                            };
+                            //add to resp obj
+                            resp.Add(line);
+                        }
+                      
+                    }
+                }
+                // final response 
+                return resp;
+            }
+            catch(Exception ex )
+            {
+                throw ex;
+            }
+        }
 
-        //        }
 
-        //        return res;
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-           
-        //}
+        #region Process Single Objs of Repeating groups 
+
+        public static DhhsSpAmhTierInfo ParseDhhsSPSingleItem(string RptStr)
+        {
+            var res = new DhhsSpAmhTierInfo();
+            res.DHHSSpAMHTierTypeCode    = PEFUtilities.GetStringValue(RptStr, 1, 1, "DHHS SP AMH Tier Type Code");
+            res.DHHSSpAMHTierEffectiveDt = PEFUtilities.GetStringValue(RptStr, 2, 10, "DHHS SP AMH Tier Type Effective Date");
+            res.DHHSSpAMHTierEndDt       = PEFUtilities.GetStringValue(RptStr, 12, 10, "DHHS SP AMH Tier Type End Date");
+            return res;
+        }
+
+        public static TaxonomyGroup ProcessTaxonomyLine(string RepeatedStr)
+        {
+            var res = new TaxonomyGroup();
+
+            res.TaxonomyCode               = PEFUtilities.GetStringValue(RepeatedStr, 1, 10, "Taxonomy Code");
+            res.TaxonomyLvl2Code           = PEFUtilities.GetStringValue(RepeatedStr, 11, 10, "Taxonomy Level 2 Code");
+            res.TaxonomyLvl3Code           = PEFUtilities.GetStringValue(RepeatedStr, 21, 10, "Taxonomy Level 3 Code");
+            //
+            res.TaxonomyCodeStatusCurrent  = PEFUtilities.GetStringValue(RepeatedStr, 31, 1, "Taxonomy Code Status Current");
+            res.TaxonomyCodeEffDateCurrent = PEFUtilities.GetStringValue(RepeatedStr, 32, 10, "Taxonomy Code Effective Date Current");
+            res.TaxonomyCodeEndDateCurrent = PEFUtilities.GetStringValue(RepeatedStr, 42, 10, "Taxonomy Code End Date Current");
+            //
+            res.TaxonomyCodeStatusPrev01   = PEFUtilities.GetStringValue(RepeatedStr, 52, 1, "Taxonomy Code Status Previous1");
+            res.TaxonomyCodeEffDatePrev01  = PEFUtilities.GetStringValue(RepeatedStr, 53, 10, "Taxonomy Code Effective Date Previous1");
+            res.TaxonomyCodeEndDatePrev01  = PEFUtilities.GetStringValue(RepeatedStr, 63, 10, "Taxonomy Code Effective Date Previous2");
+            //
+            res.TaxonomyCodeStatusPrev02   = PEFUtilities.GetStringValue(RepeatedStr, 73, 1, "Taxonomy Code Status Previous2");
+            res.TaxonomyCodeEffDatePrev02  = PEFUtilities.GetStringValue(RepeatedStr, 74, 10, "Taxonomy Code Effective Date Previous2");
+            res.TaxonomyCodeEndDatePrev02  = PEFUtilities.GetStringValue(RepeatedStr, 84, 10, "Taxonomy Code End Date Previous2");
+            res.TaxonomyCodeRetroTrigger   = PEFUtilities.GetStringValue(RepeatedStr, 94, 10, "Retrodate Trigger for Taxonomy");
+            //
+            return res;
+        }
+
+        #endregion
+
+
+
+
+        #region Prov-TaxonomyGroup20xc
 
 
         public static ProvTaxonomyLineDTO ProcessPEFTaxonomyLine(string InputLine)
@@ -267,32 +329,81 @@ namespace MH.PEF.BLL.BizLogic
             return resp;
 
         }
-
-
-
-        public static TaxonomyGroup ProcessTaxonomyLine (string RepeatedStr)
+        public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTOItem(PEFProvRepeatGroups parsedInpObj, int TaxonmyChunkSize , int TaxRptTimes)
         {
-            var res = new TaxonomyGroup();
+            try
+            {
+                var res = new List<PEFProvTaxonomyGrp>();
+                var txnGrpList = new List<string>();
+                //Read input
+                if (parsedInpObj != null)
+                {
+                    // Break into List<Strings> 
+                    var RepeatString = parsedInpObj.ProvTaxonomyGroup20x;
+                    // int chunkSize = 103;
+                    int chunkSize = TaxonmyChunkSize;
+                    var startpos = 1;
+                    // repeats 20 times 
+                    //  for (int i = 1; i <= 20; i++)
+                    for (int i = 1; i <= TaxRptTimes; i++)
+                    {
+                        var splitStr = PEFUtilities.GetStringValue(RepeatString, startpos, 103, "txnGrpList-" + i);
+                        txnGrpList.Add(splitStr);
+                        // reset start 
+                        startpos = startpos + chunkSize;
+                    }
 
-            res.TaxonomyCode                = ProcessPEFData.GetStringFieldValue(RepeatedStr, 1, 10, "Taxonomy Code");
-            res.TaxonomyLvl2Code            = ProcessPEFData.GetStringFieldValue(RepeatedStr, 11, 10, "Taxonomy Level 2 Code");
-            res.TaxonomyLvl3Code            = ProcessPEFData.GetStringFieldValue(RepeatedStr, 21, 10, "Taxonomy Level 3 Code");
-             //
-            res.TaxonomyCodeStatusCurrent   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 31, 1, "Taxonomy Code Status Current");
-            res.TaxonomyCodeEffDateCurrent  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 32, 10, "Taxonomy Code Effective Date Current");
-            res.TaxonomyCodeEndDateCurrent  = ProcessPEFData.GetStringFieldValue(RepeatedStr, 42, 10, "Taxonomy Code End Date Current");
-             //
-            res.TaxonomyCodeStatusPrev01    = ProcessPEFData.GetStringFieldValue(RepeatedStr, 52, 1, "Taxonomy Code Status Previous1");
-            res.TaxonomyCodeEffDatePrev01   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 53, 10, "Taxonomy Code Effective Date Previous1");
-            res.TaxonomyCodeEndDatePrev01   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 63, 10, "Taxonomy Code Effective Date Previous2");
-            //
-            res.TaxonomyCodeStatusPrev02    = ProcessPEFData.GetStringFieldValue(RepeatedStr, 73, 1, "Taxonomy Code Status Previous2");
-            res.TaxonomyCodeEffDatePrev02   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 74, 10, "Taxonomy Code Effective Date Previous2");
-            res.TaxonomyCodeEndDatePrev02   = ProcessPEFData.GetStringFieldValue(RepeatedStr, 84, 10, "Taxonomy Code End Date Previous2");
-            res.TaxonomyCodeRetroTrigger    = ProcessPEFData.GetStringFieldValue(RepeatedStr, 94, 10, "Retrodate Trigger for Taxonomy");
-            //
-            return res;
+                    //remove null lines 
+                    txnGrpList?.RemoveAll(x => x == null);
+
+                    // Loop Group Lines 
+                    foreach (var str in txnGrpList)
+                    {
+                        var txnLine = ProcessTaxonomyLine(str);
+
+                        var line = new PEFProvTaxonomyGrp
+                        {
+                            ProvNPI = parsedInpObj.ProvNPI,
+                            ProvNCTracksId = parsedInpObj.ProvNCTracksId,
+                            ProvEnrollmentType = parsedInpObj.ProvEnrollmentType,
+                            ProvSvcLocCode = parsedInpObj.ProvSvcLocCode,
+                            //   ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
+                            // repeat lines 
+                            TaxonomyCode = txnLine.TaxonomyCode,
+                            TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
+                            TaxonomyLvl3Code = txnLine.TaxonomyLvl3Code,
+                            //
+                            TaxonomyCodeStatusCurrent = txnLine.TaxonomyCodeStatusCurrent,
+                            TaxonomyCodeEffDateCurrent = txnLine.TaxonomyCodeEffDateCurrent,
+                            TaxonomyCodeEndDateCurrent = txnLine.TaxonomyCodeEndDateCurrent,
+                            //
+                            TaxonomyCodeStatusPrev01 = txnLine.TaxonomyCodeStatusPrev01,
+                            TaxonomyCodeEffDatePrev01 = txnLine.TaxonomyCodeEffDatePrev01,
+                            TaxonomyCodeEndDatePrev01 = txnLine.TaxonomyCodeEndDatePrev01,
+                            //
+                            TaxonomyCodeStatusPrev02 = txnLine.TaxonomyCodeStatusPrev02,
+                            TaxonomyCodeEffDatePrev02 = txnLine.TaxonomyCodeEffDatePrev02,
+                            TaxonomyCodeEndDatePrev02 = txnLine.TaxonomyCodeEndDatePrev02,
+                            TaxonomyCodeRetroTrigger = txnLine.TaxonomyCodeRetroTrigger
+                        };
+                        //add to resp obj
+                        res.Add(line);
+                    }
+                    //  }
+                    //final obj
+                  //  var final = res;
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+
+
+        #endregion
+
 
         //org
         public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTO(List<ProvTaxonomyLineDTO> parsedInpObj, int MhTrnxId)
@@ -460,84 +571,73 @@ namespace MH.PEF.BLL.BizLogic
         }
 
         //new 
-        public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTOItem(ProvTaxonomyLineDTO parsedInpObj, int MhTrnxId)
-        {
 
-            try
-            {
-                var res = new List<PEFProvTaxonomyGrp>();
-                //
-                var txnGrpList = new List<string>();
+        //public static List<PEFVendorDTO> ProcessPEFVendorDTO(PEFMasterDTO parsedIpObj , int MhTrnxId )
+        //{
+        //    try
+        //    {
+        //        var res = new List<PEFVendorDTO>();
+        //        //
+        //        var AffilGroupList = new List<string>();
 
-                //Read input
-                if (parsedInpObj != null)
-                {
-                        // Break into List<Strings> 
-                        var RepeatString = parsedInpObj.ProvTaxonomyGroup20x;
-                        int chunkSize = 103;
-                        var startpos = 1;
-                        // repeats 20 times 
-                        for (int i = 1; i <= 20; i++)
-                        {
-                            var splitStr = PEFUtilities.GetStringValue(RepeatString, startpos, 103, "txnGrpList-" + i);
-                            txnGrpList.Add(splitStr);
-                            // reset start 
-                            startpos = startpos + chunkSize;
-                        }
+        //        //parse common values 
+        //        var npi = parsedIpObj.ProvNPI;
+        //        var ncId = parsedIpObj.ProvIdofNCTracks;
+        //        var enroll = parsedIpObj.ProvEnrollmentType;
+        //        var provTax = parsedIpObj.ProvTaxId;
 
-                        //remove null lines 
-                        txnGrpList?.RemoveAll(x => x == null);
+        //        var RepeatString = parsedIpObj.AffilOrgGroup10x;
+        //        if( !string.IsNullOrEmpty( RepeatString ))
+        //        {
+        //            int chunkSize = 135;
+        //            int rptStringLen = RepeatString.Length;
 
-                        // Loop Group Lines 
-                        foreach (var str in txnGrpList)
-                        {
-                            var txnLine = ProcessTaxonomyLine(str);
+        //            for (int i = 1; i <= 10; i++)
+        //            {
+        //                var startPos = chunkSize * i;
+        //                var splitStr = PEFUtilities.GetStringValue(RepeatString, startPos, chunkSize, "AffilGroup-" + i);
 
-                            var line = new PEFProvTaxonomyGrp
-                            {
-                                ProvNPI = parsedInpObj.ProvNPI,
-                                ProvNCTracksId = parsedInpObj.ProvNCTracksId,
-                                ProvEnrollmentType = parsedInpObj.ProvEnrollmentType,
-                                ProvSvcLocCode = parsedInpObj.ProvSvcLocCode,
-                                //   ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
-                                // repeat lines 
-                                TaxonomyCode = txnLine.TaxonomyCode,
-                                TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
-                                TaxonomyLvl3Code = txnLine.TaxonomyLvl3Code,
-                                //
-                                TaxonomyCodeStatusCurrent = txnLine.TaxonomyCodeStatusCurrent,
-                                TaxonomyCodeEffDateCurrent = txnLine.TaxonomyCodeEffDateCurrent,
-                                TaxonomyCodeEndDateCurrent = txnLine.TaxonomyCodeEndDateCurrent,
-                                //
-                                TaxonomyCodeStatusPrev01 = txnLine.TaxonomyCodeStatusPrev01,
-                                TaxonomyCodeEffDatePrev01 = txnLine.TaxonomyCodeEffDatePrev01,
-                                TaxonomyCodeEndDatePrev01 = txnLine.TaxonomyCodeEndDatePrev01,
-                                //
-                                TaxonomyCodeStatusPrev02 = txnLine.TaxonomyCodeStatusPrev02,
-                                TaxonomyCodeEffDatePrev02 = txnLine.TaxonomyCodeEffDatePrev02,
-                                TaxonomyCodeEndDatePrev02 = txnLine.TaxonomyCodeEndDatePrev02,
-                                TaxonomyCodeRetroTrigger = txnLine.TaxonomyCodeRetroTrigger
-                            };
-                            //add to resp obj
-                            res.Add(line);
+        //                AffilGroupList.Add(splitStr);
+        //            }
 
-                        }
+        //            foreach (var item in AffilGroupList)
+        //            {
+        //                var respItem = new PEFVendorDTO
+        //                {
+        //                    ProvNPI = npi,
+        //                    ProvNCTracksId = ncId,
+        //                    ProvEnrollmentType = enroll,
+        //                    ProvTaxId = provTax,
+        //                    MhTrnxId = MhTrnxId,
+        //                    //
+        //                    AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(item, 1, 2, "Affiliated Organization Type Code"),
+        //                    AffilOrgNPI = ProcessPEFData.GetStringFieldValue(item, 2, 10, "Affiliated Organization NPI/Atypical"),
+        //                    AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(item, 12, 50, "Affiliated Organization Tax Id"),
+        //                    AffilOrgName = ProcessPEFData.GetStringFieldValue(item, 62, 50, "Affiliated Organization Name"),
+        //                    AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(item, 112, 3, "Affiliated Organization Service Location Code"),
+        //                    AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(item, 115, 10, "Affiliated Organization Begin Date"),
+        //                    AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(item, 125, 10, "Affiliated Organization End Date")
+        //                };
+        //                res.Add(respItem);
 
-                  //  }
-                    //final obj
-                    var final = res;
+        //            }
 
-                }
+        //        }
 
-                return res;
+        //        return res;
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
 
-        }
+        //}
+
+
+        //#. process Repeating Group obj 
+
+
 
 
     }

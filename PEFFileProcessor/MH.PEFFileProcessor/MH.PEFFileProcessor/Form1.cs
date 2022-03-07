@@ -240,17 +240,59 @@ namespace MH.PEFFileProcessor
 
         }
 
+        //Process all repeating groups per file 
         private void btn_Process_repeatgrp_Click(object sender, EventArgs e)
         {
-            var respObj = new List<PEFProvTaxonomyGrp>();
-            var parsedLineObj = new List<ProvTaxonomyLineDTO>();
+            // chunk sizes & no.of times that repeats repeating groups
+            var DhhsSPAmhChunkSize = 21;
+            var dhhsSpRptTImes = 5;
+            // removed the filler size in chunk size 
+            var TaxonomyChunkSizeTax = 103;
+            var taxonmyRptTimes = 20;
 
-            var TaxonomyChunkSizeTax = 163;
 
             try
             {
-                // 1 
-                RunProvTaxonomy20xProcess(TaxonomyChunkSizeTax);
+                //Read a Single  input file 
+                var PEFInputSPlitFile1 = @"C:\PEFRepeatSplitFiles\PEFfile1.txt";
+                //For each Line 
+                foreach (string line in File.ReadLines(PEFInputSPlitFile1))
+                {
+                    var rptItem = PEFProcessorLogic.ParsePefRepeatline(line);
+
+                    // process Dhhs Sp AMH repeat
+                    if ( !string.IsNullOrEmpty(  rptItem.DhhsSpAmhTierInfoGroup5x))
+                    {
+                        var DhhsSpResp = PEFProcessorLogic.GetDhhsSpAmhRptItem(rptItem, DhhsSPAmhChunkSize , dhhsSpRptTImes);
+                        // insert to d/b
+                        if (DhhsSpResp.Any())
+                        {
+                         //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
+                         //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                        }
+
+                    }
+
+                    // process Taxonomy 
+                    if (!string.IsNullOrEmpty(rptItem.ProvTaxonomyGroup20x))
+                    {
+                        // Get List of Prov-Taxonmy group lines 
+                        var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(rptItem, TaxonomyChunkSizeTax , taxonmyRptTimes);
+                        // insert to d/b
+                        if (pefTxnmyResp != null)
+                        {
+                            var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
+                            PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
+                        }
+
+                    }
+
+
+
+                }
+
+                    // 1 
+                 //   RunProvTaxonomy20xProcess(TaxonomyChunkSizeTax);
 
                 Display("PEF Taxonly Group Insertion Completed  " + "\n");
 
@@ -263,32 +305,28 @@ namespace MH.PEFFileProcessor
 
         }
 
-        private static void RunProvTaxonomy20xProcess(int TaxonomyChunkSizeTax)
-        {
-            //  var PEFOutputFilePath = @"C:\Outputfiles\PEFfile1.txt";
-            var PEFOutputFilePath = @"C:\PEFRepeatSplitFiles\PEFfile1.txt";
-            //
-            foreach (string line in File.ReadLines(PEFOutputFilePath))
-            {
-                // read single line 
-                var item = PEFProcessorLogic.ProcessPEFTaxonomyLine(line);
-                // parsedLineObj.Add(item);
-
-                //Check Taxonmy details exist 
-                if (item.ProvTaxonomyGroup20x != null)
-                {
-                    // Get List of Prov-Taxonmy group lines 
-                    var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(item, TaxonomyChunkSizeTax);
-                    // insert to d/b
-                    if (pefTxnmyResp != null)
-                    {
-                        var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
-                        PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
-                    }
-                }
-
-            }
-        }
+        //private static void RunProvTaxonomy20xProcess(int TaxonomyChunkSizeTax)
+        //{
+        //    var PEFOutputFilePath = @"C:\PEFRepeatSplitFiles\PEFfile1.txt";
+        //    //
+        //    foreach (string line in File.ReadLines(PEFOutputFilePath))
+        //    {
+        //        // read single line 
+        //        var item = PEFProcessorLogic.ProcessPEFTaxonomyLine(line);
+        //        //Check Taxonmy details exist 
+        //        if (item.ProvTaxonomyGroup20x != null)
+        //        {
+        //            // Get List of Prov-Taxonmy group lines 
+        //            var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(item, TaxonomyChunkSizeTax);
+        //            // insert to d/b
+        //            if (pefTxnmyResp != null)
+        //            {
+        //                var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
+        //                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
+        //            }
+        //        }
+        //    }
+        //}
 
 
         // Process ALL PEF Files(spiltted )
@@ -647,6 +685,16 @@ namespace MH.PEFFileProcessor
         {
 
         }
+
+        //private void btnProcessAffilGrp10x_Click(object sender, EventArgs e)
+        //{
+
+        //}
+
+        //private void btnProcessServicingCounties100x_Click(object sender, EventArgs e)
+        //{
+
+        //}
     }
 }
 

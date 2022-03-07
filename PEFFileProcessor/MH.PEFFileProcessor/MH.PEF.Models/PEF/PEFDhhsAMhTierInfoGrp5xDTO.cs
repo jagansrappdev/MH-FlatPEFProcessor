@@ -34,4 +34,14 @@ namespace MH.PEF.Models.PEF
         public string DHHSSpAMHTierEndDt { get; set; }           //Length: 10 
 
     }
+
+    // for single item-level parsing
+  public class DhhsSpAmhTierInfo
+    {
+        public string DHHSSpAMHTierTypeCode { get; set; }          //Length: 1 
+        public string DHHSSpAMHTierEffectiveDt { get; set; }      //Length: 10
+        public string DHHSSpAMHTierEndDt { get; set; }           //Length: 10 
+    }
+
+
 }

@@ -81,6 +81,7 @@
     <Compile Include="PEF\PEFMasterDTO.cs" />
     <Compile Include="PEF\PEFProvAffilGroupDTO.cs" />
     <Compile Include="PEF\PEFProvBizTypeGrp3xDTO.cs" />
+    <Compile Include="PEF\PEFProvRepeatGroups.cs" />
     <Compile Include="PEF\PEFProvTaxonomyGrp.cs" />
     <Compile Include="PEF\PEFSvcCountiesGrp100xDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
