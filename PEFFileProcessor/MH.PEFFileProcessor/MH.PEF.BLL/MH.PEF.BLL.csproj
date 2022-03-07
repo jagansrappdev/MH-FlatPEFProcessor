@@ -84,7 +84,6 @@
     <Compile Include="Configuration\IConnectionStrings.cs" />
     <Compile Include="DAL\DbContext.cs" />
     <Compile Include="DataTableExtensions.cs" />
-    <Compile Include="ProcessPEFData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DbContextDataTalk.cs" />
     <Compile Include="Utilities\PEFUtilities.cs" />

@@ -75,8 +75,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PEFRespModel.cs" />
-    <Compile Include="PEFileLayoutModel.cs" />
     <Compile Include="PEF\PEFDhhsAMhTierInfoGrp5xDTO.cs" />
     <Compile Include="PEF\PEFMasterDTO.cs" />
     <Compile Include="PEF\PEFProvAffilGroupDTO.cs" />
@@ -85,7 +83,6 @@
     <Compile Include="PEF\PEFProvTaxonomyGrp.cs" />
     <Compile Include="PEF\PEFSvcCountiesGrp100xDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test02.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
