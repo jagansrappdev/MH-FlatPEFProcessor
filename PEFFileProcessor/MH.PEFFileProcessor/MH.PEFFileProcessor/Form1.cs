@@ -308,6 +308,49 @@ namespace MH.PEFFileProcessor
 
         }
 
+        private void btnProcessFailedRptGroups_Click(object sender, EventArgs e)
+        {
+            // chunk sizes & no.of times that repeats repeating groups
+            var DhhsSPAmhChunkSize = 21;
+            var dhhsSpRptTImes = 5;
+            //Read all files  
+            var InputSplitFiles = @"C:\New20kOutputFiles";
+              var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(InputSplitFiles);
+            // test 
+          //  var pefAllSplitFilespath = @"C:\New20kOutputFiles\PEFfile1.txt";
+          try
+            {
+                foreach (var fItem in pefAllSplitFilespath)
+                {
+                    //For each Line 
+                    foreach (string line in File.ReadLines(fItem))
+                    {
+                        var rptItem = PEFProcessorLogic.ParsePefRepeatline(line);
+
+                        // process Dhhs Sp AMH repeat
+                        if (!string.IsNullOrEmpty(rptItem.DhhsSpAmhTierInfoGroup5x))
+                        {
+                            var DhhsSpResp = PEFProcessorLogic.GetDhhsAMhTierInfoGrpList(rptItem, DhhsSPAmhChunkSize, dhhsSpRptTImes);
+                            // insert to d/b
+                            if (DhhsSpResp.Any())
+                            {
+                                var dt = PEFUtilities.ToDataTable(DhhsSpResp);
+                                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                            }
+                        }
+                    }
+                }
+                //display a message 
+                Display("--------- All Failed  groups Iterations completed !!------ " + "\n");
+            }
+            catch (Exception ex)
+            {
+                Display("\n" + "!! >> error in Process_repeatgrp_Click() ! " + "\n" + ex.ToString());
+            }
+
+           
+        }
+
 
     }
 }

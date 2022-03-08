@@ -35,6 +35,7 @@ namespace MH.PEFFileProcessor
             this.btnProcessAllfiles = new System.Windows.Forms.Button();
             this.btnCreateDbTbl = new System.Windows.Forms.Button();
             this.btn_Process_repeatgrp = new System.Windows.Forms.Button();
+            this.btnProcessFailedRptGroups = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnCountLines
@@ -95,11 +96,22 @@ namespace MH.PEFFileProcessor
             this.btn_Process_repeatgrp.UseVisualStyleBackColor = true;
             this.btn_Process_repeatgrp.Click += new System.EventHandler(this.btn_Process_repeatgrp_Click);
             // 
+            // btnProcessFailedRptGroups
+            // 
+            this.btnProcessFailedRptGroups.Location = new System.Drawing.Point(568, 207);
+            this.btnProcessFailedRptGroups.Name = "btnProcessFailedRptGroups";
+            this.btnProcessFailedRptGroups.Size = new System.Drawing.Size(108, 71);
+            this.btnProcessFailedRptGroups.TabIndex = 8;
+            this.btnProcessFailedRptGroups.Text = "F*- process Failed Repeatgroup";
+            this.btnProcessFailedRptGroups.UseVisualStyleBackColor = true;
+            this.btnProcessFailedRptGroups.Click += new System.EventHandler(this.btnProcessFailedRptGroups_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(702, 689);
+            this.Controls.Add(this.btnProcessFailedRptGroups);
             this.Controls.Add(this.btn_Process_repeatgrp);
             this.Controls.Add(this.btnCreateDbTbl);
             this.Controls.Add(this.btnProcessAllfiles);
@@ -121,6 +133,7 @@ namespace MH.PEFFileProcessor
         private System.Windows.Forms.Button btnProcessAllfiles;
         private System.Windows.Forms.Button btnCreateDbTbl;
         private System.Windows.Forms.Button btn_Process_repeatgrp;
+        private System.Windows.Forms.Button btnProcessFailedRptGroups;
     }
 }
 

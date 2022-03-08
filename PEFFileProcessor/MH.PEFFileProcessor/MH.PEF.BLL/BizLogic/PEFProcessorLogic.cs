@@ -218,7 +218,7 @@ namespace MH.PEF.BLL.BizLogic
                 var resp = new List<PEFDhhsAMhTierInfoGrp5xDTO>();
                 var txnGrpList = new List<string>();
 
-                if (string.IsNullOrEmpty(Ip.DhhsSpAmhTierInfoGroup5x))
+                if (!string.IsNullOrEmpty(Ip.DhhsSpAmhTierInfoGroup5x))
                 {
                     // Break into List<Strings> 
                     var RepeatString = Ip.DhhsSpAmhTierInfoGroup5x;
