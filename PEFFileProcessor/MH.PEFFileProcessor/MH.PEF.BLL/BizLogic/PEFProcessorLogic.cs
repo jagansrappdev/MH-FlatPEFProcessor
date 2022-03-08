@@ -189,6 +189,7 @@ namespace MH.PEF.BLL.BizLogic
             return resp;
         }
 
+
         //# process repeat-grp line 
         public static PEFProvRepeatGroups ParsePefRepeatline(string IpLine)
         {
@@ -236,6 +237,8 @@ namespace MH.PEF.BLL.BizLogic
                     //remove null lines 
                     txnGrpList?.RemoveAll(x => x == null);
 
+                    // init a counter for order of strings parsed
+                    var counter = 1;
                     // Loop Group Lines 
                     foreach (var str in txnGrpList)
                     {
@@ -248,6 +251,8 @@ namespace MH.PEF.BLL.BizLogic
                                 ProvNCTracksId = Ip.ProvNCTracksId,
                                 ProvEnrollmentType = Ip.ProvEnrollmentType,
                                 ProvSvcLocCode = Ip.ProvSvcLocCode,
+                                // set order of parsed 
+                                Order = counter,
                                 // rpt lines 
                                 DHHSSpAMHTierTypeCode = txnLine.DHHSSpAMHTierTypeCode,
                                 DHHSSpAMHTierEffectiveDt = txnLine.DHHSSpAMHTierEffectiveDt,
@@ -255,6 +260,8 @@ namespace MH.PEF.BLL.BizLogic
                             };
                             //add to resp obj
                             resp.Add(line);
+                            // inc 
+                            counter++;
                         }
                     }
                 }
@@ -290,9 +297,11 @@ namespace MH.PEF.BLL.BizLogic
                         // reset start 
                         startpos = startpos + chunkSize;
                     }
-
                     //remove null lines 
                     txnGrpList?.RemoveAll(x => x == null);
+
+                    // init a counter for order of strings parsed
+                    var counter = 1;
                     // Loop Group Lines 
                     foreach (var str in txnGrpList)
                     {
@@ -305,6 +314,8 @@ namespace MH.PEF.BLL.BizLogic
                                 ProvNCTracksId = Ip.ProvNCTracksId,
                                 ProvEnrollmentType = Ip.ProvEnrollmentType,
                                 ProvSvcLocCode = Ip.ProvSvcLocCode,
+                                // set order of parsed 
+                                Order = counter,
                                 // rpt lines 
                                 ProvBizTypeCode = txnLine.ProvBizTypeCode,
                                 ProvBizTypeBeginDt = txnLine.ProvBizTypeBeginDt,
@@ -312,6 +323,8 @@ namespace MH.PEF.BLL.BizLogic
                             };
                             //add to resp obj
                             resp.Add(line);
+                            // inc 
+                            counter++;
                         }
                     }
                 }
@@ -351,6 +364,8 @@ namespace MH.PEF.BLL.BizLogic
                     //remove null lines 
                     txnGrpList?.RemoveAll(x => x == null);
 
+                    // init a counter for order of strings parsed
+                    var counter = 1;
                     // Loop Group Lines 
                     foreach (var str in txnGrpList)
                     {
@@ -363,6 +378,8 @@ namespace MH.PEF.BLL.BizLogic
                                 ProvNCTracksId = Ip.ProvNCTracksId,
                                 ProvEnrollmentType = Ip.ProvEnrollmentType,
                                 ProvSvcLocCode = Ip.ProvSvcLocCode,
+                                // set order of parsed 
+                                Order = counter,
                                 // rpt lines 
                                 AffilOrgTypeCode = txnLine.AffilOrgTypeCode,
                                 AffilOrgNPI = txnLine.AffilOrgNPI,
@@ -374,6 +391,8 @@ namespace MH.PEF.BLL.BizLogic
                             };
                             //add to resp obj
                             resp.Add(line);
+                            // inc 
+                            counter++;
                         }
 
                     }
@@ -414,6 +433,8 @@ namespace MH.PEF.BLL.BizLogic
                     //remove null lines 
                     txnGrpList?.RemoveAll(x => x == null);
 
+                    // init a counter for order of strings parsed
+                    var counter = 1;
                     // Loop Group Lines 
                     foreach (var str in txnGrpList)
                     {
@@ -426,6 +447,8 @@ namespace MH.PEF.BLL.BizLogic
                                 ProvNCTracksId = Ip.ProvNCTracksId,
                                 ProvEnrollmentType = Ip.ProvEnrollmentType,
                                 ProvSvcLocCode = Ip.ProvSvcLocCode,
+                                // set order of parsed 
+                                Order = counter,
                                 // rpt lines 
                                 SvcCountyCode = txnLine.SvcCountyCode,
                                 SvcCountyBeginDt = txnLine.SvcCountyBeginDt,
@@ -433,6 +456,8 @@ namespace MH.PEF.BLL.BizLogic
                             };
                             //add to resp obj
                             resp.Add(line);
+                            // inc 
+                            counter++;
                         }
                     }
                 }
@@ -460,6 +485,8 @@ namespace MH.PEF.BLL.BizLogic
         public static TaxonomyGroup ProcessTaxonomyLine(string RptStr)
         {
             var res = new TaxonomyGroup();
+
+            // Add Order 
 
             res.TaxonomyCode = PEFUtilities.GetStringValue(RptStr, 1, 10, "Taxonomy Code");
             res.TaxonomyLvl2Code = PEFUtilities.GetStringValue(RptStr, 11, 10, "Taxonomy Level 2 Code");
@@ -517,25 +544,8 @@ namespace MH.PEF.BLL.BizLogic
 
         #endregion
 
+        //
 
-        #region Prov-TaxonomyGroup20xc
-
-
-        public static ProvTaxonomyLineDTO ProcessPEFTaxonomyLine(string InputLine)
-        {
-            var resp = new ProvTaxonomyLineDTO();
-            /*  -------Perform string operations based on field length ------------- */
-            resp.ProvNPI = PEFUtilities.GetStringValue(InputLine, 1, 10, "Provider NPI");
-            resp.ProvNCTracksId = PEFUtilities.GetStringValue(InputLine, 11, 8, "NCTracks Internal Provider Identifier");
-            resp.ProvEnrollmentType = PEFUtilities.GetStringValue(InputLine, 19, 1, "Provider Enrollment Type");
-            resp.ProvSvcLocCode = PEFUtilities.GetStringValue(InputLine, 1276, 3, "Service Location Code key");
-            // repet string 
-            //##.  REPEAT-4 ://pass it to a new function  
-            resp.ProvTaxonomyGroup20x = PEFUtilities.GetStringValueNOTrim(InputLine, 1589, 2060, "Provider Taxonomy Group (20x)");
-
-            return resp;
-
-        }
         public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTOItem(PEFProvRepeatGroups parsedInpObj, int TaxonmyChunkSize, int TaxRptTimes)
         {
             try
@@ -563,18 +573,20 @@ namespace MH.PEF.BLL.BizLogic
                     //remove null lines 
                     txnGrpList?.RemoveAll(x => x == null);
 
+                    // init a counter for order of strings parsed
+                    var counter = 1;
                     // Loop Group Lines 
                     foreach (var str in txnGrpList)
                     {
                         var txnLine = ProcessTaxonomyLine(str);
-
                         var line = new PEFProvTaxonomyGrp
                         {
                             ProvNPI = parsedInpObj.ProvNPI,
                             ProvNCTracksId = parsedInpObj.ProvNCTracksId,
                             ProvEnrollmentType = parsedInpObj.ProvEnrollmentType,
                             ProvSvcLocCode = parsedInpObj.ProvSvcLocCode,
-                            //   ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
+                            // set order of parsed 
+                            Order = counter,
                             // repeat lines 
                             TaxonomyCode = txnLine.TaxonomyCode,
                             TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
@@ -595,6 +607,8 @@ namespace MH.PEF.BLL.BizLogic
                         };
                         //add to resp obj
                         res.Add(line);
+                        // inc 
+                        counter++;
                     }
                     //  }
                     //final obj
@@ -607,242 +621,6 @@ namespace MH.PEF.BLL.BizLogic
                 throw ex;
             }
         }
-
-
-        #endregion
-
-
-        //org
-        public static List<PEFProvTaxonomyGrp> ProcessPEFTaxonomyGrpDTO(List<ProvTaxonomyLineDTO> parsedInpObj, int MhTrnxId)
-        {
-
-            try
-            {
-                var res = new List<PEFProvTaxonomyGrp>();
-                //
-                var txnGrpList = new List<string>();
-
-                //Read input
-                if (parsedInpObj.Any())
-                {
-                    // Process all 33k lines 
-                    foreach (var item in parsedInpObj)
-                    {
-
-                        // Break into List<Strings> 
-                        var RepeatString = item.ProvTaxonomyGroup20x;
-                        int chunkSize = 103;
-                        var startpos = 1;
-                        // repeats 20 times 
-                        for (int i = 1; i <= 20; i++)
-                        {
-                            var splitStr = PEFUtilities.GetStringValue(RepeatString, startpos, 103, "txnGrpList-" + i);
-                            txnGrpList.Add(splitStr);
-                            // reset start 
-                            startpos = startpos + chunkSize;
-                        }
-
-                        //remove null lines 
-                        txnGrpList?.RemoveAll(x => x == null);
-
-                        // Loop Group Lines 
-                        foreach (var str in txnGrpList)
-                        {
-                            var txnLine = PEFProcessorLogic.ProcessTaxonomyLine(str);
-
-                            var line = new PEFProvTaxonomyGrp
-                            {
-                                ProvNPI = item.ProvNPI,
-                                ProvNCTracksId = item.ProvNCTracksId,
-                                ProvEnrollmentType = item.ProvEnrollmentType,
-                                ProvSvcLocCode = item.ProvSvcLocCode,
-                                //   ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x,
-                                // repeat lines 
-                                TaxonomyCode = txnLine.TaxonomyCode,
-                                TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
-                                TaxonomyLvl3Code = txnLine.TaxonomyLvl3Code,
-                                //
-                                TaxonomyCodeStatusCurrent = txnLine.TaxonomyCodeStatusCurrent,
-                                TaxonomyCodeEffDateCurrent = txnLine.TaxonomyCodeEffDateCurrent,
-                                TaxonomyCodeEndDateCurrent = txnLine.TaxonomyCodeEndDateCurrent,
-                                //
-                                TaxonomyCodeStatusPrev01 = txnLine.TaxonomyCodeStatusPrev01,
-                                TaxonomyCodeEffDatePrev01 = txnLine.TaxonomyCodeEffDatePrev01,
-                                TaxonomyCodeEndDatePrev01 = txnLine.TaxonomyCodeEndDatePrev01,
-                                //
-                                TaxonomyCodeStatusPrev02 = txnLine.TaxonomyCodeStatusPrev02,
-                                TaxonomyCodeEffDatePrev02 = txnLine.TaxonomyCodeEffDatePrev02,
-                                TaxonomyCodeEndDatePrev02 = txnLine.TaxonomyCodeEndDatePrev02,
-                                TaxonomyCodeRetroTrigger = txnLine.TaxonomyCodeRetroTrigger
-                            };
-                            //add to resp obj
-                            res.Add(line);
-
-                        }
-
-                        /*
-                        //parse repat string :
-                        var txnLine = PEFProcessorLogic.ProcessTaxonomyLine(item.ProvTaxonomyGroup20x);
-                        var line = new PEFProvTaxonomyGrp
-                        {
-                            ProvNPI = item.ProvNPI,
-                            ProvNCTracksId = item.ProvNCTracksId,
-                            ProvEnrollmentType = item.ProvEnrollmentType,
-                            ProvSvcLocCode = item.ProvSvcLocCode,
-                            ProvTaxonomyGroup20x = item.ProvTaxonomyGroup20x ,
-                            // repeat lines 
-                            TaxonomyCode = txnLine.TaxonomyCode,
-                            TaxonomyLvl2Code = txnLine.TaxonomyLvl2Code,
-                            TaxonomyLvl3Code = txnLine.TaxonomyLvl3Code,
-                            //
-                            TaxonomyCodeStatusCurrent = txnLine.TaxonomyCodeStatusCurrent,
-                            TaxonomyCodeEffDateCurrent = txnLine.TaxonomyCodeEffDateCurrent,
-                            TaxonomyCodeEndDateCurrent = txnLine.TaxonomyCodeEndDateCurrent,
-                            //
-                            TaxonomyCodeStatusPrev01 = txnLine.TaxonomyCodeStatusPrev01,
-                            TaxonomyCodeEffDatePrev01 = txnLine.TaxonomyCodeEffDatePrev01,
-                            TaxonomyCodeEndDatePrev01 = txnLine.TaxonomyCodeEndDatePrev01,
-                            //
-                            TaxonomyCodeStatusPrev02 = txnLine.TaxonomyCodeStatusPrev02,
-                            TaxonomyCodeEffDatePrev02 = txnLine.TaxonomyCodeEffDatePrev02,
-                            TaxonomyCodeEndDatePrev02 = txnLine.TaxonomyCodeEndDatePrev02,
-                            TaxonomyCodeRetroTrigger = txnLine.TaxonomyCodeRetroTrigger
-                        };
-                        */
-
-                    }
-                    //final obj
-                    var final = res;
-
-                }
-
-
-
-
-
-
-                //------ parse Unique KEY Combo
-                //var npi = parsedIpObj.;
-                //var ncId = parsedIpObj.ProvIdofNCTracks;
-                //var enroll = parsedIpObj.ProvEnrollmentType;
-                //var svcLocKey = parsedIpObj.ProvSvcLocCode;
-                //// repeat String group
-                //var RepeatString = parsedIpObj.ProvTaxonomyGroup20x;
-
-
-                //if (!string.IsNullOrEmpty(RepeatString))
-                //{
-                //    int chunkSize = 135;
-                //    int rptStringLen = RepeatString.Length;
-
-                //    for (int i = 1; i <= 10; i++)
-                //    {
-                //        var startPos = chunkSize * i;
-                //        var splitStr = PEFUtilities.GetStringValue(RepeatString, startPos, chunkSize, "AffilGroup-" + i);
-
-                //        AffilGroupList.Add(splitStr);
-                //    }
-
-                //    foreach (var item in AffilGroupList)
-                //    {
-                //        var respItem = new PEFVendorDTO
-                //        {
-                //            ProvNPI = npi,
-                //            ProvNCTracksId = ncId,
-                //            ProvEnrollmentType = enroll,
-                //            ProvTaxId = provTax,
-                //            MhTrnxId = MhTrnxId,
-                //            //
-                //            AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(item, 1, 2, "Affiliated Organization Type Code"),
-                //            AffilOrgNPI = ProcessPEFData.GetStringFieldValue(item, 2, 10, "Affiliated Organization NPI/Atypical"),
-                //            AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(item, 12, 50, "Affiliated Organization Tax Id"),
-                //            AffilOrgName = ProcessPEFData.GetStringFieldValue(item, 62, 50, "Affiliated Organization Name"),
-                //            AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(item, 112, 3, "Affiliated Organization Service Location Code"),
-                //            AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(item, 115, 10, "Affiliated Organization Begin Date"),
-                //            AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(item, 125, 10, "Affiliated Organization End Date")
-                //        };
-                //        res.Add(respItem);
-
-                //    }
-
-                //}
-
-                return res;
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-        }
-
-        //new 
-
-        //public static List<PEFVendorDTO> ProcessPEFVendorDTO(PEFMasterDTO parsedIpObj , int MhTrnxId )
-        //{
-        //    try
-        //    {
-        //        var res = new List<PEFVendorDTO>();
-        //        //
-        //        var AffilGroupList = new List<string>();
-
-        //        //parse common values 
-        //        var npi = parsedIpObj.ProvNPI;
-        //        var ncId = parsedIpObj.ProvIdofNCTracks;
-        //        var enroll = parsedIpObj.ProvEnrollmentType;
-        //        var provTax = parsedIpObj.ProvTaxId;
-
-        //        var RepeatString = parsedIpObj.AffilOrgGroup10x;
-        //        if( !string.IsNullOrEmpty( RepeatString ))
-        //        {
-        //            int chunkSize = 135;
-        //            int rptStringLen = RepeatString.Length;
-
-        //            for (int i = 1; i <= 10; i++)
-        //            {
-        //                var startPos = chunkSize * i;
-        //                var splitStr = PEFUtilities.GetStringValue(RepeatString, startPos, chunkSize, "AffilGroup-" + i);
-
-        //                AffilGroupList.Add(splitStr);
-        //            }
-
-        //            foreach (var item in AffilGroupList)
-        //            {
-        //                var respItem = new PEFVendorDTO
-        //                {
-        //                    ProvNPI = npi,
-        //                    ProvNCTracksId = ncId,
-        //                    ProvEnrollmentType = enroll,
-        //                    ProvTaxId = provTax,
-        //                    MhTrnxId = MhTrnxId,
-        //                    //
-        //                    AffilOrgTypeCode = ProcessPEFData.GetStringFieldValue(item, 1, 2, "Affiliated Organization Type Code"),
-        //                    AffilOrgNPI = ProcessPEFData.GetStringFieldValue(item, 2, 10, "Affiliated Organization NPI/Atypical"),
-        //                    AffilOrgTaxId = ProcessPEFData.GetStringFieldValue(item, 12, 50, "Affiliated Organization Tax Id"),
-        //                    AffilOrgName = ProcessPEFData.GetStringFieldValue(item, 62, 50, "Affiliated Organization Name"),
-        //                    AffilOrgSvcLocation = ProcessPEFData.GetStringFieldValue(item, 112, 3, "Affiliated Organization Service Location Code"),
-        //                    AffilOrgBeginDt = ProcessPEFData.GetStringFieldValue(item, 115, 10, "Affiliated Organization Begin Date"),
-        //                    AffilOrgEndDt = ProcessPEFData.GetStringFieldValue(item, 125, 10, "Affiliated Organization End Date")
-        //                };
-        //                res.Add(respItem);
-
-        //            }
-
-        //        }
-
-        //        return res;
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-
-        //}
-
-
-        //#. process Repeating Group obj 
 
 
 

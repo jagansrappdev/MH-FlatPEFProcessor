@@ -20,6 +20,8 @@ namespace MH.PEF.Models.PEF
         [StringLength(3)]
         public string ProvSvcLocCode { get; set; }
         // -- Unique key combination   -- END  
+        // Order # - for unique record 
+        public Int64? Order { get; set; }
 
         [StringLength(3)]
         public string SvcCountyCode { get; set; }

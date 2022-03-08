@@ -21,6 +21,9 @@ namespace MH.PEF.Models.PEF
         public string ProvSvcLocCode { get; set; }
         // -- Unique key combination   -- END  
 
+        // Order # - for unique record 
+        public Int64? Order { get; set; }
+
         [StringLength(1)]
         public string DHHSSpAMHTierTypeCode { get; set; }          //Length: 1 
         [StringLength(10)]

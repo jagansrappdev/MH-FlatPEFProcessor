@@ -36,14 +36,14 @@ namespace MH.PEFFileProcessor
 
 
         #region Button Events 
-       
+
         private void btnCountLines_Click(object sender, EventArgs e)
         {
             try
             { // int count = File.ReadAllLines(PEFFullFilePath).Length;
                 var lineCount = File.ReadLines(PEFFullFilePath).Count();
-               // rtb_Status.Text = );
-                Display("!Total Lines in selected-File = " + lineCount.ToString() + "\n" );
+                // rtb_Status.Text = );
+                Display("!Total Lines in selected-File = " + lineCount.ToString() + "\n");
 
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace MH.PEFFileProcessor
         private void btnSplitFile_Click(object sender, EventArgs e)
         {
             var PEFOpFilespath = @"C:\New20kOutputFiles";
-         //   var PEFOpFilespath = @"C:\PEFRepeatSplitFiles";
+            //   var PEFOpFilespath = @"C:\PEFRepeatSplitFiles";
             var FilesCount = GetFileCount(PEFOpFilespath);
             if (FilesCount > 0)
             {
@@ -138,70 +138,81 @@ namespace MH.PEFFileProcessor
             try
             {
                 //Read a Single  input file 
-                var PEFInputSPlitFile1 = @"C:\PEFRepeatSplitFiles\PEFfile1.txt";
-                //For each Line 
-                foreach (string line in File.ReadLines(PEFInputSPlitFile1))
-                {
-                    var rptItem = PEFProcessorLogic.ParsePefRepeatline(line);
+                //  var PEFInputSPlitFile1 = @"C:\PEFRepeatSplitFiles\PEFfile1.txt";
+                //Read all files  
+                var InputSplitFiles = @"C:\New20kOutputFiles";
+                var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(InputSplitFiles);
 
-                    // process Dhhs Sp AMH repeat
-                    if ( !string.IsNullOrEmpty(  rptItem.DhhsSpAmhTierInfoGroup5x))
+                foreach (var fItem in pefAllSplitFilespath)
+                {
+
+                    //For each Line 
+                    foreach (string line in File.ReadLines(fItem))
                     {
-                        var DhhsSpResp = PEFProcessorLogic.GetDhhsAMhTierInfoGrpList(rptItem, DhhsSPAmhChunkSize , dhhsSpRptTImes);
-                        // insert to d/b
-                        if (DhhsSpResp.Any())
+                        var rptItem = PEFProcessorLogic.ParsePefRepeatline(line);
+
+                        // process Dhhs Sp AMH repeat
+                        if (!string.IsNullOrEmpty(rptItem.DhhsSpAmhTierInfoGroup5x))
                         {
-                         //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
-                         //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                            var DhhsSpResp = PEFProcessorLogic.GetDhhsAMhTierInfoGrpList(rptItem, DhhsSPAmhChunkSize, dhhsSpRptTImes);
+                            // insert to d/b
+                            if (DhhsSpResp.Any())
+                            {
+                                var dt = PEFUtilities.ToDataTable(DhhsSpResp);
+                                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
+                            }
+                        }
+                        // process Taxonomy 
+                        if (!string.IsNullOrEmpty(rptItem.ProvTaxonomyGroup20x))
+                        {
+                            // Get List of Prov-Taxonmy group lines 
+                            var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(rptItem, TaxonomyChunkSize, taxonmyRptTimes);
+                            // insert to d/b
+                            if (pefTxnmyResp != null)
+                            {
+                                var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
+                                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
+                            }
+                        }
+                        // prov Biz type :
+                        if (!string.IsNullOrEmpty(rptItem.ProvBizTypeGroup3x))
+                        {
+                            var ProvBizTypeResp = PEFProcessorLogic.GetProvBizTypeGrpList(rptItem, ProvBizTypeGrpChunkSize, ProvBizTypeGrpRptTimes);
+                            // insert to d/b
+                            if (ProvBizTypeResp.Any())
+                            {
+                                var dt = PEFUtilities.ToDataTable(ProvBizTypeResp);
+                                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvBizTypeGrp3xDTO");
+                            }
+                        }
+                        // Affil Group
+                        if (!string.IsNullOrEmpty(rptItem.AffilOrgGroup10x))
+                        {
+                            var AffilOrgGrpList = PEFProcessorLogic.GetProvAffilGroupList(rptItem, AffilOrgGroupChunkSize, AffilOrgRptTimes);
+                            // insert to d/b
+                            if (AffilOrgGrpList.Any())
+                            {
+                                var dt = PEFUtilities.ToDataTable(AffilOrgGrpList);
+                                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvAffilGroupDTO");
+                            }
+                        }
+                        //
+                        if (!string.IsNullOrEmpty(rptItem.SvcCountiesGroup100x))
+                        {
+                            var SvcCountieGrpList = PEFProcessorLogic.GetSvcCountiesGrpList(rptItem, SvcCountiesChunkSize, SvcCountiesRptTimes);
+                            // insert to d/b
+                            if (SvcCountieGrpList.Any())
+                            {
+                                var dt = PEFUtilities.ToDataTable(SvcCountieGrpList);
+                                PEFUtilities.PerformDBInsertion(dt, "dbo.PEFSvcCountiesGrp100xDTO");
+                            }
                         }
                     }
-                    // process Taxonomy 
-                    if (!string.IsNullOrEmpty(rptItem.ProvTaxonomyGroup20x))
-                    {
-                        // Get List of Prov-Taxonmy group lines 
-                        var pefTxnmyResp = PEFProcessorLogic.ProcessPEFTaxonomyGrpDTOItem(rptItem, TaxonomyChunkSize, taxonmyRptTimes);
-                        // insert to d/b
-                        if (pefTxnmyResp != null)
-                        {
-                            var dt = PEFUtilities.ToDataTable(pefTxnmyResp);
-                            PEFUtilities.PerformDBInsertion(dt, "dbo.PEFProvTaxonomyGrp");
-                        }
-                    }
-                    // prov Biz type :
-                    if (!string.IsNullOrEmpty(rptItem.ProvBizTypeGroup3x))
-                    {
-                        var ProvBizTypeResp = PEFProcessorLogic.GetProvBizTypeGrpList(rptItem, ProvBizTypeGrpChunkSize, ProvBizTypeGrpRptTimes);
-                        // insert to d/b
-                        if (ProvBizTypeResp.Any())
-                        {
-                            //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
-                            //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
-                        }
-                    }
-                    // Affil Group
-                    if (!string.IsNullOrEmpty(rptItem.AffilOrgGroup10x))
-                    {
-                        var AffilOrgGrpList = PEFProcessorLogic.GetProvAffilGroupList(rptItem, AffilOrgGroupChunkSize, AffilOrgRptTimes);
-                        // insert to d/b
-                        if (AffilOrgGrpList.Any())
-                        {
-                            //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
-                            //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
-                        }
-                    }
-                    //
-                    if (!string.IsNullOrEmpty(rptItem.SvcCountiesGroup100x))
-                    {
-                        var SvcCountieGrpList = PEFProcessorLogic.GetSvcCountiesGrpList(rptItem, SvcCountiesChunkSize, SvcCountiesRptTimes);
-                        // insert to d/b
-                        if (SvcCountieGrpList.Any())
-                        {
-                            //   var dt = PEFUtilities.ToDataTable(DhhsSpResp);
-                            //   PEFUtilities.PerformDBInsertion(dt, "dbo.PEFDhhsAMhTierInfoGrp5xDTO");
-                        }
-                    }
+
+
+                    // end of files- loops 
                 }
-                 
+
                 //display a message 
                 Display("--------- All Repeating groups Iterations completed !!------ " + "\n");
 
@@ -220,11 +231,11 @@ namespace MH.PEFFileProcessor
             {
                 var InputSplitFiles = @"C:\New20kOutputFiles";
                 var respObj = new List<PEFMasterDTO>();
-              
+
                 //Read all files  
                 var pefAllSplitFilespath = PEFUtilities.GetAllFilesFromDir(InputSplitFiles);
                 //Read file-by file 
-                foreach(var fItem in pefAllSplitFilespath)
+                foreach (var fItem in pefAllSplitFilespath)
                 {
                     // Read a file data 
                     foreach (string line in File.ReadLines(fItem))
@@ -233,12 +244,12 @@ namespace MH.PEFFileProcessor
                         var item = PEFProcessorLogic.ProcessPEFMasterDTOLine(line);
                         if (item != null)
                         {
-                           // var dt = PEFUtilities.ToDataTable(item);
+                            // var dt = PEFUtilities.ToDataTable(item);
                             var dt = PEFUtilities.ClassToDataTable(item);
-                          
+
                             PEFUtilities.PerformDBInsertion(dt, "dbo.PEFMasterDTO");
                         }
-                          //  respObj.Add(item);
+                        //  respObj.Add(item);
                     }
 
                 }
@@ -297,7 +308,7 @@ namespace MH.PEFFileProcessor
 
         }
 
-      
+
     }
 }
 
